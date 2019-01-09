@@ -1553,10 +1553,15 @@ body.index #main {
 }
 
 /* Wide */
-
+.ban_title {
+	font-size: 50px;
+}
 @media screen and (max-width: 1680px) {
 
 	/* Basic */
+	.ban_title {
+		font-size: 50px;
+	}
 	.container {
 		width: auto;
 	}
@@ -1581,6 +1586,9 @@ body.index #main {
 @media screen and (max-width: 1200px) {
 
 	/* Basic */
+	.ban_title {
+		font-size: 30px;
+	}
 	.container {
 		width: auto;
 	}
@@ -1644,12 +1652,20 @@ body.index #main {
 	}
 
 }
-
+.space1 {
+	height: 80px
+}
 /* Narrow */
 
 @media screen and (max-width: 980px) {
 
 	/* Basic */
+	.space1 {
+		height: 30px
+	}
+	.form {
+		width: 90%;
+	}
 	.container {
 		width: auto;
 	}
@@ -1729,9 +1745,11 @@ body.index #main {
 	display: none;
 }
 
+
 @media screen and (max-width: 840px) {
 
 	/* Basic */
+
 	.container {
 		width: auto;
 	}

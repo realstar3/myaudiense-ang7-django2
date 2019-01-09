@@ -4,6 +4,7 @@ import { User } from '../models/user';
 import {Http, Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import {AppSettings} from '../../app.constant';
+import {catchError, map, tap} from 'rxjs/operators';
 
 @Injectable()
 export class UserService {
@@ -22,6 +23,26 @@ export class UserService {
       }
 
   }
+	/**
+	 * Log the user in
+	 */
+	login(username: string, password: string): Observable<string> {
+		return this.http.post(`${this.apiUrl}/api/auth/login/`, { username, password })
+			.pipe(
+				map(res => res.json()),
+				tap(res => {
+					if (res.token)
+					{
+						this.loggedIn = true;
+						this.loggedInData = res.user;
+						localStorage.setItem('api_auth_token', res.token);
+						localStorage.setItem('api_user_data', JSON.stringify(res.user));
+					}
+				}),
+				catchError(this.handleError));
+
+			// .catch(this.handleError));
+	}
 
   /**
    * Check if the user is logged in
@@ -63,23 +84,6 @@ export class UserService {
       .catch(this.handleError);
   }
 
-  /**
-   * Log the user in
-   */
-  login(username: string, password: string): Observable<string> {
-    return this.http.post(`${this.apiUrl}/api/auth/Login/`, { username, password })
-      .map(res => res.json())
-      .do(res => {
-        if (res.token)
-        {
-          this.loggedIn = true;
-          this.loggedInData = res.user;
-          localStorage.setItem('api_auth_token', res.token);
-            localStorage.setItem('api_user_data', JSON.stringify(res.user));
-        }
-      })
-      .catch(this.handleError);
-  }
 
 
     /**

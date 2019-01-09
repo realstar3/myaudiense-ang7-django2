@@ -14,7 +14,7 @@ import {WINDOW} from './window.service';
 
 })
 export class AppComponent implements OnInit {
-
+	isMobile = false;
   cloudBackgroundShow = false;
   indexContentShow =  false;
   subscribeEmail = '';
@@ -29,6 +29,10 @@ export class AppComponent implements OnInit {
 
   )
   {
+  	console.log(window.screen.width);
+  	if(window.screen.width < 850){
+		this.isMobile = true;
+	}
 
     this.router.events
       .filter(event => event instanceof NavigationEnd)
@@ -127,7 +131,7 @@ export class AppComponent implements OnInit {
   /**
    * Sign up
    * */
-  signup(){
+  signUp(){
     let navigationExtras: NavigationExtras = {
       queryParams: {
         'active_status':false,

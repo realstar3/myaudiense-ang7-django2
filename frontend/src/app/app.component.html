@@ -3,12 +3,12 @@
 	<!--<h1 >-->
 	<a id="logo" href="#" style="left: 0">
 		<!--<img  src="../assets/logo-199-47.png" style="display: inline; height: 50px;">-->
-		<span>
-			MyAudiens
-    	</span>
+		<strong>
+			<span style="font-size: 30px">MyAudiens</span>
+		</strong>
 	</a>
 	<!--</h1>-->
-	<nav id="nav">
+	<nav id="nav" >
 
 		<ul>
 			<li><a routerLink="">Home</a></li>
@@ -16,26 +16,27 @@
 			<li><a routerLink="">Marketplace</a></li>
 			<li><a routerLink="">Invite</a></li>
 
-			<li class="current">
-				<a [routerLink]="['']">Welcome
-					<span style="color: #ff8c00">{{loggedInData.first_name}}</span>
+			<li *ngIf="isLoggedIn" class="current">
+				<a [routerLink]="['']">
+					<span style="color: #ff8c00">{{loggedInData.username}}</span>
 				</a>
 			</li>
-			<!--<li class="submenu">-->
-			<!--<a href="#">Menu</a>-->
-			<!--<ul>-->
-			<!--<li><a routerLink="/signup">Sign Up</a></li>-->
-			<!--<li><a routerLink="/signin">Sign In</a></li>-->
-			<!--<li><a routerLink="#">Home</a></li>-->
-			<!--<li><a routerLink="#">Profile</a></li>-->
-			<!--<li><a routerLink="/">Marketplace</a></li>-->
-			<!--<li><a routerLink="/">Invite</a></li>-->
+			<!--<li *ngIf="isMobile" class="submenu">-->
+				<!--<a href="#">Menu</a>-->
+				<!--<ul>-->
+					<!--<li ><a routerLink="/signup">Sign Up</a></li>-->
+					<!--<li ><a routerLink="/signin">Log Out</a></li>-->
 
 
-			<!--</ul>-->
+
+				<!--</ul>-->
 			<!--</li>-->
-			<li *ngIf="!isLoggedIn"><a (click)="signup()" class="button special">Sign Up</a></li>
-			<li *ngIf="isLoggedIn"><a (click)="logout()" class="button special">Sign Out</a></li>
+
+			<li *ngIf="!isLoggedIn&&!isMobile" ><a  routerLink="/signin" class="button special ">Sign In</a></li>
+			<li *ngIf="isLoggedIn&&!isMobile" ><a  (click)="logout()" class="button special ">Log Out</a></li>
+			<li *ngIf="isMobile" ><a  routerLink="/signup" class="button special ">Sign Up</a></li>
+			<li *ngIf="isMobile" ><a  routerLink="/signin" class="button special ">Sign In</a></li>
+			<li *ngIf="isMobile" ><a  routerLink="/signin" class="button special ">Log Out</a></li>
 		</ul>
 	</nav>
 
@@ -237,25 +238,25 @@
 	</section>
 	<!-- Open news letter section -->
 	<!--<section class="news" >-->
-		<!--<div class="container text-center">-->
-			<!--<div class="row">-->
-				<!--<div class="col-md-12 inputs">-->
-					<!--<h5>NEWSLETTER</h5>-->
-					<!--<h2>-->
-						<!--OUR MONTHLY NEWSLETTER IS<br> CURATED BY TOP EXPERT-->
-					<!--</h2>-->
-					<!--<form #userForm="ngForm" (submit)="onSubmit()">-->
+	<!--<div class="container text-center">-->
+	<!--<div class="row">-->
+	<!--<div class="col-md-12 inputs">-->
+	<!--<h5>NEWSLETTER</h5>-->
+	<!--<h2>-->
+	<!--OUR MONTHLY NEWSLETTER IS<br> CURATED BY TOP EXPERT-->
+	<!--</h2>-->
+	<!--<form #userForm="ngForm" (submit)="onSubmit()">-->
 
-						<!--<input name="email" type="email" [(ngModel)]="subscribeEmail"-->
-							   <!--#subscribeEmail1="ngModel"-->
-							   <!--placeholder="Enter your e-mail here...">-->
-						<!--<button type="submit">Subscribe</button>-->
+	<!--<input name="email" type="email" [(ngModel)]="subscribeEmail"-->
+	<!--#subscribeEmail1="ngModel"-->
+	<!--placeholder="Enter your e-mail here...">-->
+	<!--<button type="submit">Subscribe</button>-->
 
 
-					<!--</form>-->
-				<!--</div>-->
-			<!--</div>-->
-		<!--</div>-->
+	<!--</form>-->
+	<!--</div>-->
+	<!--</div>-->
+	<!--</div>-->
 	<!--</section>-->
 </article>
 

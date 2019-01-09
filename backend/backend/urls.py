@@ -20,13 +20,15 @@ from django.conf.urls import url
 from auth_token import views
 
 urlpatterns = [
-# path('admin/', admin.site.urls),
-url('api/auth/Login/', views.UserLogin.as_view()),
-url('api/auth/signup/$', views.UserSignUp.as_view()),
-url('api/auth/Logout/', views.UserLogout.as_view()),
-url('api/auth/Activate/', views.UserActivate.as_view()),
-url('api/auth/SendMailForPassword/', views.SendMailForResetPassword.as_view()),
-url('api/auth/ChangePassword/', views.ChangePassword.as_view()),
+	# path('admin/', admin.site.urls),
+	path('api/', include('auth_token.urls')),
+
+	# url('api/auth/login/$', views.UserLogin.as_view()),
+	# url('api/auth/signup/$', views.UserSignUp.as_view()),
+	# url('api/auth/Logout/', views.UserLogout.as_view()),
+	# url('api/auth/Activate/', views.UserActivate.as_view()),
+	# url('api/auth/SendMailForPassword/', views.SendMailForResetPassword.as_view()),
+	# url('api/auth/ChangePassword/', views.ChangePassword.as_view()),
 
 ]
 
