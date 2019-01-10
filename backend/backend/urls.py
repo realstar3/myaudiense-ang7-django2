@@ -20,7 +20,7 @@ from django.conf.urls import url
 from auth_token import views
 
 urlpatterns = [
-	# path('admin/', admin.site.urls),
+	path('admin/', admin.site.urls),
 	path('api/', include('auth_token.urls')),
 
 	# url('api/auth/login/$', views.UserLogin.as_view()),

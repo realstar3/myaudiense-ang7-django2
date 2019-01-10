@@ -834,15 +834,15 @@ input[type="password"]
 	position: relative;
 }
 
-.image:before {
-	background: url("assets/css/images/overlay.png");
-	content: '';
-	height: 100%;
-	left: 0;
-	position: absolute;
-	top: 0;
-	width: 100%;
-}
+/*.image:before {*/
+	/*background: url("assets/css/images/overlay.png");*/
+	/*content: '';*/
+	/*height: 100%;*/
+	/*left: 0;*/
+	/*position: absolute;*/
+	/*top: 0;*/
+	/*width: 100%;*/
+/*}*/
 
 .image.fit {
 	display: block;
@@ -1504,21 +1504,21 @@ body.index #main {
 
 /* CTA */
 
-#cta {
-	background-attachment: scroll, scroll, scroll, fixed;
-	background-color: #645862;
-	background-image: url("assets/css/images/light-tl.svg"), url("assets/css/images/light-tr.svg"), url("assets/css/images/overlay.png");
-	background-position: top left, top right, top left, bottom center;
-	background-repeat: no-repeat, no-repeat, repeat, no-repeat;
-	background-size: 25em, 25em, auto, cover;
-	color: #fff;
-	padding: 5em;
-	text-align: center;
-}
+/*#cta {*/
+	/*background-attachment: scroll, scroll, scroll, fixed;*/
+	/*background-color: #645862;*/
+	/*background-image: url("assets/css/images/light-tl.svg"), url("assets/css/images/light-tr.svg"), url("assets/css/images/overlay.png");*/
+	/*background-position: top left, top right, top left, bottom center;*/
+	/*background-repeat: no-repeat, no-repeat, repeat, no-repeat;*/
+	/*background-size: 25em, 25em, auto, cover;*/
+	/*color: #fff;*/
+	/*padding: 5em;*/
+	/*text-align: center;*/
+/*}*/
 
-#cta header {
-	margin-bottom: 2em;
-}
+/*#cta header {*/
+	/*margin-bottom: 2em;*/
+/*}*/
 
 /* Footer */
 
@@ -1554,6 +1554,7 @@ body.index #main {
 
 /* Wide */
 .ban_title {
+	line-height: 110%;
 	font-size: 50px;
 }
 @media screen and (max-width: 1680px) {
@@ -1562,9 +1563,9 @@ body.index #main {
 	.ban_title {
 		font-size: 50px;
 	}
-	.container {
-		width: auto;
-	}
+	/*.container {*/
+		/*width: auto;*/
+	/*}*/
 	.main-div{
 		min-height: 600px;
 	}
@@ -1658,14 +1659,14 @@ body.index #main {
 /* Narrow */
 
 @media screen and (max-width: 980px) {
+	#header nav {
+		font-size: 12px;
+		letter-spacing: 0.01em;
+	}
 
 	/* Basic */
-	.space1 {
-		height: 30px
-	}
-	.form {
-		width: 90%;
-	}
+
+
 	.container {
 		width: auto;
 	}
@@ -1749,7 +1750,12 @@ body.index #main {
 @media screen and (max-width: 840px) {
 
 	/* Basic */
-
+	.space1 {
+		height: 30px
+	}
+	.form {
+		width: 90%;
+	}
 	.container {
 		width: auto;
 	}

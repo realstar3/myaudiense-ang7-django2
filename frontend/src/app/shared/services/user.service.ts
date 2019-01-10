@@ -8,21 +8,21 @@ import {catchError, map, tap} from 'rxjs/operators';
 
 @Injectable()
 export class UserService {
-  private apiUrl: string = AppSettings.API_ENDPOINT;
-  private loggedIn: boolean = false;
-  private loggedInData: any = {};
+	private apiUrl: string = AppSettings.API_ENDPOINT;
+	private loggedIn: boolean = false;
+	private loggedInData: any = {};
 
-  constructor(private http: Http){
-    // localStorage.setItem('api_auth_token', '');
-    this.loggedIn = !!localStorage.getItem('api_auth_token');
-    if(this.loggedIn)
-      try {
-        this.loggedInData = JSON.parse(localStorage.getItem('api_user_data'));
-      } catch(e) {
-          alert(e); // error in the above string (in this case, yes)!
-      }
+	constructor(private http: Http){
+		// localStorage.setItem('api_auth_token', '');
+		this.loggedIn = !!localStorage.getItem('api_auth_token');
+		if(this.loggedIn)
+			try {
+				this.loggedInData = JSON.parse(localStorage.getItem('api_user_data'));
+			} catch(e) {
+				alert(e); // error in the above string (in this case, yes)!
+			}
 
-  }
+	}
 	/**
 	 * Log the user in
 	 */
@@ -39,124 +39,139 @@ export class UserService {
 						localStorage.setItem('api_user_data', JSON.stringify(res.user));
 					}
 				}),
-				catchError(this.handleError));
+				catchError(this.handleError)
+			);
 
-			// .catch(this.handleError));
+		// .catch(this.handleError));
+	}
+	/**
+	 * Log the user in
+	 */
+	register(username: string, password: string, last_name: string, first_name: string): Observable<string> {
+		let userData = {
+			username : username,
+			email : username,
+			password : password,
+			first_name : first_name,
+			last_name : last_name
+		};
+		return this.http.post(`${this.apiUrl}/api/auth/signup/`, userData)
+			.pipe(
+				map(res => res.json()),
+				tap(res => {
+					if (res.token)
+					{
+						this.loggedIn = true;
+						this.loggedInData = res.user;
+						localStorage.setItem('api_auth_token', res.token);
+						localStorage.setItem('api_user_data', JSON.stringify(res.user));
+					}
+				}),
+				catchError(this.handleError)
+			);
+
 	}
 
-  /**
-   * Check if the user is logged in
-   */
-  isLoggedIn() {
-    return this.loggedIn;
-  }
+
+	/**
+	 * Check if the user is logged in
+	 */
+	isLoggedIn() {
+		return this.loggedIn;
+	}
 
 
-/**
-   * Check if the user is logged in
-   */
-  getLoggedInData() {
-    return this.loggedInData;
-  }
-  sendMailFor(username:string):Observable<string>{
-    let body = {username:username};
-    return this.http.post(`${this.apiUrl}/api/auth/SendMailForPassword/`, body)
-      .map(res => res.json())
-      .do(res => {
-        this.loggedIn = false;
-        this.loggedInData = [];
-        localStorage.setItem('api_auth_token', '');
-      })
-      .catch(this.handleError);
-  }
-  changePasswordFor(username:string, userpass:string):Observable<string>{
-    let body = {
-      username:username,
-      password:userpass
-    };
-    return this.http.post(`${this.apiUrl}/api/auth/ChangePassword/`, body)
-      .map(res => res.json())
-      .do(res => {
-        this.loggedIn = false;
-        this.loggedInData=[];
-        localStorage.setItem('api_auth_token', '')
-      })
-      .catch(this.handleError);
-  }
+	/**
+	 * Check if the user is logged in
+	 */
+	getLoggedInData() {
+		return this.loggedInData;
+	}
+	sendMailFor(username:string):Observable<string>{
+		let body = {username:username};
+		return this.http.post(`${this.apiUrl}/api/auth/SendMailForPassword/`, body)
+			.pipe(
+				map(res => res.json()),
+				tap(res => {
+					this.loggedIn = false;
+					this.loggedInData = [];
+					localStorage.setItem('api_auth_token', '');
+				}),
+				catchError(this.handleError)
+			);
+
+	}
+	changePasswordFor(username:string, userpass:string):Observable<string>{
+		let body = {
+			username:username,
+			password:userpass
+		};
+		return this.http.post(`${this.apiUrl}/api/auth/ChangePassword/`, body)
+			.pipe(
+				map(res => res.json()),
+				tap(res => {
+					this.loggedIn = false;
+					this.loggedInData=[];
+					localStorage.setItem('api_auth_token', '')
+				}),
+				catchError(this.handleError)
+			)
+
+	}
 
 
 
-    /**
-   * Log the user in
-   */
-  register(username: string, password: string, last_name: string, first_name: string): Observable<string> {
-    let userData = {
-        username : username,
-        email : username,
-        password : password,
-        first_name : first_name,
-        last_name : last_name
-    };
-    return this.http.post(`${this.apiUrl}/api/auth/signup/`, userData)
-      .map(res => res.json())
-      .do(res => {
-        if (res.token)
-        {
-          this.loggedIn = true;
-          this.loggedInData = res.user;
-            localStorage.setItem('api_auth_token', res.token);
-            localStorage.setItem('api_user_data', JSON.stringify(res.user));
-        }
-      })
-      .catch(this.handleError);
-  }
 
-    /**
-   * Log the user out
-   */
-  public logout() {
-    localStorage.removeItem('api_auth_token');
-    localStorage.removeItem('api_user_data');
-    this.loggedInData = {};
-    this.loggedIn = false;
+	/**
+	 * Log the user out
+	 */
+	public logout() {
+		localStorage.removeItem('api_auth_token');
+		localStorage.removeItem('api_user_data');
+		this.loggedInData = {};
+		this.loggedIn = false;
 
-  }
-  /**
-   * Request user active to backend
-   */
-  activeRequest(tk:string): Observable<string>{
-     let tkData = {
-        token : tk
-    };
-    return this.http.post(AppSettings.API_ENDPOINT+"/api/auth/Activate/", tkData).map(res => res.json())
-      .do(res => {
-      if (res.token)
-        {
-          this.loggedIn = true;
-          this.loggedInData = res.user;
-            localStorage.setItem('api_auth_token', res.token);
-            localStorage.setItem('api_user_data', JSON.stringify(res.user));
-        }
-      })
-      .catch(this.handleError);
-  }
+	}
+	/**
+	 * Request user active to backend
+	 */
+	activeRequest(tk:string): Observable<string>{
+		let tkData = {
+			token : tk
+		};
+		return this.http.post(AppSettings.API_ENDPOINT+"/api/auth/Activate/", tkData)
+			.pipe(
+				map(res => res.json()),
+				tap(res => {
+					if (res.token)
+					{
+						this.loggedIn = true;
+						this.loggedInData = res.user;
+						localStorage.setItem('api_auth_token', res.token);
+						localStorage.setItem('api_user_data', JSON.stringify(res.user));
+					}
+				}),
+				catchError(this.handleError)
+			);
 
-  /**
-   * Handle any errors from the API
-   */
-  private handleError(err) {
-    let errMessage: string;
+	}
 
-    if (err instanceof Response) {
-      let body   = err.json() || '';
-      let error  = body.error || JSON.stringify(body);
-      errMessage = `${err.statusText || ''} ${error}`;
-    } else {
-      errMessage = err.message ? err.message : err.toString();
-    }
+	/**
+	 * Handle any errors from the API
+	 */
+	private handleError(err) {
+		let errMessage: string;
 
-    return Observable.throw(errMessage);
-  }
+		if (err instanceof Response) {
+			let body   = err.json() || '';
+			let error  = body.error || JSON.stringify(body);
+			errMessage = `${err.statusText || ''} ${error}`;
+		} else {
+			errMessage = err.message ? err.message : err.toString();
+		}
+
+		return Observable.throw(errMessage);
+	}
 
 
 

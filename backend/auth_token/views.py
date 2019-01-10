@@ -160,47 +160,47 @@ def send_email_reset_password_link(email=None):
 	# full_path = os.path.realpath(__file__)
 	# file_path = '%s/a.txt' % os.path.dirname(full_path)
 	try:
-		if email:
-			msg = EmailMultiAlternatives(
-				subject="[DATAEXO] Reset your password",
-				body="No worry if you forgot password",
-				from_email="DATAEXO <message@dataexo.com>",
-				to=[email],
-				reply_to=["DATAEXO <support@dataexo.com>"])
 
-			ahref = """<a href="http://""" + settings.SITE_DOMAIN + """/#/front/change?user_email=""" + str(
-				email) + """">Click here</a>"""
-			# logo_cid = attach_inline_image_file(msg, os.path.dirname(full_path)+'/static/img/logo.png')
-			html = """
-            <div><table><tbody>
-            <tr><h3>Hi, """ + email + """ </h3></tr><tr><h4> Did you forget password to work in DATAEXO ?</h4></tr>
-            <tr>
-                <table>
-                    <tbody>
-                    <tr>
-                        <td width=30>&nbsp;</td>
-                        <td width=32 style="padding-top:30px;padding-bottom:32px;width:32px" valign="middle">
-                            <img width="50" height="25" style="display:block;vertical-align:top" alt="Logo" src="https://ci5.googleusercontent.com/proxy/JEJXSgwcrst6ovJ_vSVTr320W1yFnzyjnd6ai5Eh0zsnzbSYH2wn1Ox8VoTU3ZFOtskE3OZQ35U65aZ-vy7qX-h9KMryJoRPUVvWZ3_r1858wX2EdnRS2r5I89bbmGS0NZfKTA=s0-d-e1-ft#http://landing.adobe.com/dam/global/images/creative-cloud.logo.red.268x200.png"></td>
-                        <td style="color:#333333;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:20px;padding-top:30px;padding-bottom:32px" valign="middle">No worry. It is simple.""" + ahref + """ </td>
-                    </tr></tbody>
-                </table>
-            </tr>
-            </tbody></table><div>
-                """
-			msg.attach_alternative(html, "text/html")
-			# Optional Anymail extensions:
-			# msg.metadata = {"user_id": "8675309", "experiment_variation": 1}
-			# msg.tags = ["activation", "onboarding"]
-			msg.track_clicks = True
-			msg.tags = ["Approving"]
+		msg = EmailMultiAlternatives(
+			subject="[MyAudiens] Reset your password",
+			body="No worry if you forgot password",
+			from_email="MyAudiens <message@myaudiens.com>",
+			to=[email],
+			reply_to=["NoReply <support@myaudiens.com>"])
+
+		ahref = """<a href="http://""" + settings.SITE_DOMAIN + """/#/front/change?user_email=""" + str(
+			email) + """">Click here</a>"""
+		# logo_cid = attach_inline_image_file(msg, os.path.dirname(full_path)+'/static/img/logo.png')
+		html = """
+		<div><table><tbody>
+		<tr><h3>Hi, """ + email + """ </h3></tr><tr><h4> Did you forget password to work in MyAudiens ?</h4></tr>
+		<tr>
+			<table>
+				<tbody>
+				<tr>
+					<td width=30>&nbsp;</td>
+					<td width=32 style="padding-top:30px;padding-bottom:32px;width:32px" valign="middle">
+						<img width="50" height="25" style="display:block;vertical-align:top" alt="Logo" src="https://ci5.googleusercontent.com/proxy/JEJXSgwcrst6ovJ_vSVTr320W1yFnzyjnd6ai5Eh0zsnzbSYH2wn1Ox8VoTU3ZFOtskE3OZQ35U65aZ-vy7qX-h9KMryJoRPUVvWZ3_r1858wX2EdnRS2r5I89bbmGS0NZfKTA=s0-d-e1-ft#http://landing.adobe.com/dam/global/images/creative-cloud.logo.red.268x200.png"></td>
+					<td style="color:#333333;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:20px;padding-top:30px;padding-bottom:32px" valign="middle">No worry. It is simple.""" + ahref + """ </td>
+				</tr></tbody>
+			</table>
+		</tr>
+		</tbody></table><div>
+			"""
+		msg.attach_alternative(html, "text/html")
+		# Optional Anymail extensions:
+		# msg.metadata = {"user_id": "8675309", "experiment_variation": 1}
+		# msg.tags = ["activation", "onboarding"]
+		msg.track_clicks = True
+		msg.tags = ["Approving"]
 
 		send_flag = msg.send()
 		print("reset mail send successful : " + str(send_flag))
 		print(ahref)
-		return True;
+		return True
 	except Exception as e:
 		print('Exception: {}'.format(e))
-		return False;
+		return False
 
 
 def send_email(token=None, username=None, email=None):
@@ -212,39 +212,39 @@ def send_email(token=None, username=None, email=None):
 	# full_path = os.path.realpath(__file__)
 	# file_path = '%s/a.txt' % os.path.dirname(full_path)
 	try:
-		if token:
-			msg = EmailMultiAlternatives(
-				subject="Waiting for approval",
-				# body="A new user has signed up and their account is pending approval.\n\n\n" +
-				#      " Account email is " + email + "\n User Name is " + username,
-				from_email="MYAUDIENS <message@myaudiens.com>",
-				to=[username+" <"+email+">"],
-				reply_to=["noReply <noReply@myaudiens.com>"])
 
-			ahref="""<a href="http://"""+settings.SITE_DOMAIN+"""/#/front/active?token="""+str(token)+"""">activate</a>"""
-			# logo_cid = attach_inline_image_file(msg, os.path.dirname(full_path)+'/static/img/logo.png')
-			html = """
-            <div><table><tbody>
-            <tr><h3>Hi, """ + username + """ </h3></tr><tr><h4> You have signed up and your account is pending approval.</h4></tr>
-            <tr>
-                <table>
-                    <tbody>
-                    <tr>
-                        <td width=30>&nbsp;</td>
-                        <td width=32 style="padding-top:30px;padding-bottom:32px;width:32px" valign="middle">
-                            <img width="50" height="25" style="display:block;vertical-align:top" alt="Logo" src="https://ci5.googleusercontent.com/proxy/JEJXSgwcrst6ovJ_vSVTr320W1yFnzyjnd6ai5Eh0zsnzbSYH2wn1Ox8VoTU3ZFOtskE3OZQ35U65aZ-vy7qX-h9KMryJoRPUVvWZ3_r1858wX2EdnRS2r5I89bbmGS0NZfKTA=s0-d-e1-ft#http://landing.adobe.com/dam/global/images/creative-cloud.logo.red.268x200.png"></td>
-                        <td style="color:#333333;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:20px;padding-top:30px;padding-bottom:32px" valign="middle">Please """+ahref+""" your account</td>
-                    </tr></tbody>
-                </table>
-            </tr>
-            </tbody></table><div>
-                """
-			msg.attach_alternative(html, "text/html")
-			# Optional Anymail extensions:
-			# msg.metadata = {"user_id": "8675309", "experiment_variation": 1}
-			# msg.tags = ["activation", "onboarding"]
-			msg.track_clicks = True
-			msg.tags = ["Approving"]
+		msg = EmailMultiAlternatives(
+			subject="Waiting for approval",
+			# body="A new user has signed up and their account is pending approval.\n\n\n" +
+			#      " Account email is " + email + "\n User Name is " + username,
+			from_email="MYAUDIENS <message@myaudiens.com>",
+			to=[username+" <"+email+">"],
+			reply_to=["noReply <noReply@myaudiens.com>"])
+
+		ahref="""<a href="http://"""+settings.SITE_DOMAIN+"""/#/front/active?token="""+str(token)+"""">activate</a>"""
+		# logo_cid = attach_inline_image_file(msg, os.path.dirname(full_path)+'/static/img/logo.png')
+		html = """
+		<div><table><tbody>
+		<tr><h3>Hi, """ + username + """ </h3></tr><tr><h4> You have signed up and your account is pending approval.</h4></tr>
+		<tr>
+			<table>
+				<tbody>
+				<tr>
+					<td width=30>&nbsp;</td>
+					<td width=32 style="padding-top:30px;padding-bottom:32px;width:32px" valign="middle">
+						<img width="50" height="25" style="display:block;vertical-align:top" alt="Logo" src="https://ci5.googleusercontent.com/proxy/JEJXSgwcrst6ovJ_vSVTr320W1yFnzyjnd6ai5Eh0zsnzbSYH2wn1Ox8VoTU3ZFOtskE3OZQ35U65aZ-vy7qX-h9KMryJoRPUVvWZ3_r1858wX2EdnRS2r5I89bbmGS0NZfKTA=s0-d-e1-ft#http://landing.adobe.com/dam/global/images/creative-cloud.logo.red.268x200.png"></td>
+					<td style="color:#333333;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:20px;padding-top:30px;padding-bottom:32px" valign="middle">Please """+ahref+""" your account</td>
+				</tr></tbody>
+			</table>
+		</tr>
+		</tbody></table><div>
+			"""
+		msg.attach_alternative(html, "text/html")
+		# Optional Anymail extensions:
+		# msg.metadata = {"user_id": "8675309", "experiment_variation": 1}
+		# msg.tags = ["activation", "onboarding"]
+		msg.track_clicks = True
+		msg.tags = ["Approving"]
 
 		sent = msg.send()
 		print("confirm mail send successful : " + str(sent))
