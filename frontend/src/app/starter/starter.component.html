@@ -1,0 +1,115 @@
+<div class="row justify-content-center align-items-center" style="margin: 50px 0 50px 0">
+  <div *ngIf="!active_status" class="col-xl-6 " style="margin: 0 0 50px 0">
+    <table >
+      <tr >
+        <td colspan="2" style="padding-bottom: 50px">
+          <div class="col-10 col-centered">
+            Buy and sell tickets to your favorite events from the people you trust the most: your friends.
+          </div>
+        </td>
+      </tr>
+      <tr >
+        <td style="padding: 20px 20px 20px 20px">
+          <img width="70px" height="70px"  src="../../assets/images/svg/006-shopping-bag.svg"/>
+        </td>
+        <td class="text-left">
+          <div class="">
+            <span style="font-size: 20px">List your tickets on the marketplace for your friends to see.</span>
+          </div>
+        </td>
+      </tr>
+      <tr >
+        <td style="padding: 20px 20px 20px 20px">
+          <img width="70px" height="70px"  src="../../assets/images/svg/005-search-1.svg"/>
+        </td>
+        <td class="text-left">
+          <div class="">
+            <span style="font-size: 20px">Browse the marketplace to see which if your friends are selling the tickets you want.</span>
+          </div>
+        </td>
+      </tr>
+      <tr >
+        <td style="padding: 20px 20px 20px 20px">
+          <img width="70px" height="70px"  src="../../assets/images/svg/003-reliability.svg"/>
+        </td>
+        <td class="text-left">
+          <div class="">
+            <span style="font-size: 20px">Build your transaction reputation by leaving reviews after exchanging tickets with any buyer/seller.</span>
+          </div>
+        </td>
+
+      </tr>
+
+    </table>
+
+  </div>
+
+  <div *ngIf="!isLoggedIn&&!active_status" class=" jumbotron col-xl-6" >
+    <div class="row" style="margin: 0 10px 50px 10px">
+      <form (submit)="signUp()" >
+      <table class="-align-left" >
+        <tr>
+          <td style="padding-bottom: 30px">
+            <div style="font-size: 35px; font-weight: bold">Sign Up</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-bottom: 30px">
+            <div style="font-size: 20px; font-weight: bold">Don’t miss out on another event again.</div>
+          </td>
+        </tr>
+        <tr class="d-flex">
+          <td class="col-5" style="padding-bottom: 30px">
+            <div style="font-size: 20px;">
+              <input [(ngModel)]="user.first_name" [ngModelOptions]="{standalone: true}" class="col-12" type="text" placeholder="First Name">
+            </div>
+          </td>
+          <td class="col-5"  style="padding-bottom: 30px">
+            <div style="font-size: 20px;">
+              <input [(ngModel)]="user.last_name" [ngModelOptions]="{standalone: true}" class="col-12" type="text" placeholder="Last Name">
+            </div>
+          </td>
+        </tr>
+        <tr class="d-flex">
+          <td class="col-10"  style="padding-bottom: 30px">
+            <div style="font-size: 20px;">
+              <input [(ngModel)]="user.username" [ngModelOptions]="{standalone: true}" class="col-12" type="email" placeholder="Email">
+            </div>
+          </td>
+
+        </tr>
+        <tr class="d-flex">
+          <td class="col-10" style="padding-bottom: 30px">
+            <div style="font-size: 20px;">
+              <input  [(ngModel)]="user.password" [ngModelOptions]="{standalone: true}" class="col-12" type="password" placeholder="Password">
+            </div>
+          </td>
+
+        </tr>
+        <tr class="d-flex">
+          <td  class="col-8"  style="padding-bottom: 30px">
+              <span style="font-size: 17px;">
+                By clicking Sign Up, you agree to our Terms, Data Policy and Cookies Policy. You may receive SMS Notifications from us and can opt out any time.
+              </span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-bottom: 20px">
+            <div style="margin-left: 20px">
+              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">SignUp</button>
+            </div>
+          </td>
+        </tr>
+      </table>
+      </form>
+    </div>
+  </div>
+
+  <div *ngIf="active_status" class=" jumbotron col-xl-6" >
+    <div class="row" style="margin: 0 10px 50px 10px">
+      <div style="font-size: 20px; font-weight: bold">
+        Your account must be approved before you can access. please check your email for an update shortly.
+      </div>
+    </div>
+  </div>
+</div>

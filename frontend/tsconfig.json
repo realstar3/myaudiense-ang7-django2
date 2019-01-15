@@ -1,6 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
@@ -13,12 +14,7 @@
     ],
     "lib": [
       "es2017",
-      "dom",
-      "es2015.promise"
+      "dom"
     ]
-  },
-  "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
-    "preserveWhitespaces": false
   }
 }
