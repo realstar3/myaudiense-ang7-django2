@@ -125,12 +125,16 @@ class SendMailForResetPassword(generics.GenericAPIView):
 		response = {}
 		try:
 			user = User.objects.get(username=username)
+			auth_token = AuthToken.objects.filter(user_id=user.id, is_expired=False).first()
+			if auth_token:
+				send_email_reset_password_link(user.username, str(auth_token.token))
+				return Response(response, status=status.HTTP_200_OK)
 		except:
-			response['error'] = ['No exist this email']
-			return Response(response, status=status.HTTP_401_UNAUTHORIZED)
-		if user:
-			send_email_reset_password_link(user.username)
-			return Response(response, status=status.HTTP_200_OK)
+			pass
+		response['error'] = ['No exist this email']
+		return Response(response, status=status.HTTP_401_UNAUTHORIZED)
+
+
 
 
 class ChangePassword(generics.GenericAPIView):
@@ -139,19 +143,24 @@ class ChangePassword(generics.GenericAPIView):
 	def post(self, request, *args, **kw):
 		username = self.request.data.get(key_config.KEY_USERNAME)
 		userpass = self.request.data.get(key_config.KEY_PASSWORD)
+		token = self.request.data.get("token")
 		response = {}
 		try:
 			user = User.objects.get(username=username)
-			user.set_password(userpass)
-			user.save()
-			return Response(response, status=status.HTTP_200_OK)
+			auth_token = AuthToken.objects.get(token=token)
+			if user.id == auth_token.user_id:
+				user.set_password(userpass)
+				user.save()
+				return Response(response, status=status.HTTP_200_OK)
 		except:
-			response['error'] = ['No exist this email']
-			return Response(response, status=status.HTTP_401_UNAUTHORIZED)
+			pass
+
+		response['error'] = ['No exist this email']
+		return Response(response, status=status.HTTP_401_UNAUTHORIZED)
 
 
 
-def send_email_reset_password_link(email=None):
+def send_email_reset_password_link(email=None, token=None):
 	"""
 	Send email to admin or user.
 	:param email:
@@ -164,12 +173,12 @@ def send_email_reset_password_link(email=None):
 		msg = EmailMultiAlternatives(
 			subject="[MyAudiens] Reset your password",
 			body="No worry if you forgot password",
-			from_email="MyAudiens <message@myaudiens.com>",
+			from_email="MyAudiens <noreply@myaudiens.com>",
 			to=[email],
-			reply_to=["NoReply <support@myaudiens.com>"])
+			reply_to=["SupportTeam <noreply@myaudiens.com>"])
 
-		ahref = """<a href="http://""" + settings.SITE_DOMAIN + """/#/front/change?user_email=""" + str(
-			email) + """">Click here</a>"""
+		ahref = """<a href="http://""" + settings.SITE_DOMAIN + """/change?user_email=""" + email + \
+				"""&token=""" + token + """">Click here</a>"""
 		# logo_cid = attach_inline_image_file(msg, os.path.dirname(full_path)+'/static/img/logo.png')
 		html = """
 		<div><table><tbody>
@@ -212,16 +221,15 @@ def send_email(token=None, username=None, email=None):
 	# full_path = os.path.realpath(__file__)
 	# file_path = '%s/a.txt' % os.path.dirname(full_path)
 	try:
-
 		msg = EmailMultiAlternatives(
 			subject="Waiting for approval",
 			# body="A new user has signed up and their account is pending approval.\n\n\n" +
 			#      " Account email is " + email + "\n User Name is " + username,
-			from_email="MYAUDIENS <message@myaudiens.com>",
+			from_email="MYAUDIENS <noreply@myaudiens.com>",
 			to=[username+" <"+email+">"],
-			reply_to=["noReply <noReply@myaudiens.com>"])
+			reply_to=["SupportTeam <noreply@myaudiens.com>"])
 
-		ahref="""<a href="http://"""+settings.SITE_DOMAIN+"""/#/front/active?token="""+str(token)+"""">activate</a>"""
+		ahref="""<a href="http://"""+settings.SITE_DOMAIN+"""/active?token="""+str(token)+"""">activate</a>"""
 		# logo_cid = attach_inline_image_file(msg, os.path.dirname(full_path)+'/static/img/logo.png')
 		html = """
 		<div><table><tbody>

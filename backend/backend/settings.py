@@ -40,7 +40,7 @@ ANYMAIL = {
 	"MAILGUN_SENDER_DOMAIN": env('MAILGUN_SENDER_DOMAIN'),
 }
 EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
-DEFAULT_FROM_EMAIL = "message@myaudiens.com"
+DEFAULT_FROM_EMAIL = "noreply@myaudiens.com"
 # Application definition
 
 INSTALLED_APPS = [
@@ -136,6 +136,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 REST_FRAMEWORK = {
 	# 'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -158,4 +159,5 @@ CORS_ALLOW_HEADERS = default_headers + (
 	'x-auth-token',
 	'x-auth-id',
 	'Authorization',
+	'Access-Control-Allow-Methods'
 )
