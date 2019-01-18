@@ -3,10 +3,11 @@ import { Injectable } from '@angular/core';
 // import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import {AppSettings} from '../../app.constant';
-import * as _ from 'lodash';
 import {catchError, tap} from 'rxjs/operators';
 import {Http, Response} from '@angular/http';
 import {throwError} from 'rxjs';
+import {HttpErrorResponse} from "@angular/common/http";
+import {ErrorObservable} from "rxjs-compat/observable/ErrorObservable";
 
 
 @Injectable()
@@ -164,13 +165,19 @@ export class UserService {
    */
   private handleError(err) {
     let errMessage: string;
+    try {
+      if (err instanceof Response) {
+        let body   = err.json() || '';
+        let error  = body.error || JSON.stringify(body);
+        errMessage = `${err.statusText || ''} : ${error}`;
+      } else {
+        errMessage = err.message ? err.message : err.toString();
+      }
 
-    if (err instanceof Response) {
-      let body   = err.json() || '';
-      let error  = body.error || JSON.stringify(body);
-      errMessage = `${err.statusText || ''} : ${error}`;
-    } else {
-      errMessage = err.message ? err.message : err.toString();
+    }
+    catch (e) {
+      errMessage = err['statusText']
+
     }
 
     return throwError(errMessage);
@@ -187,8 +194,7 @@ export class UserService {
   // 			`body was: ${error.error}`);
   // 	}
   // 	// return an ErrorObservable with a user-facing error message
-  // 	return new ErrorObservable(
-  // 		'Something bad happened; please try again later.');
+  // 	return new ErrorObservable('Something bad happened; please try again later.');
   // };
 
 

@@ -24,10 +24,11 @@ export class ActiveComponent implements OnInit {
     this.userService.activeRequest(this.token).subscribe(
       (res: any) => {
          this.myData = res.data;
-         this.router.navigate(['/']);
+         this.router.navigate(['/starter']);
       },
       err => {
        this.toastaService.error(err);
+       this.router.navigate(['/starter']);
       }
     );
   }

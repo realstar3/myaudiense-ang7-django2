@@ -113,7 +113,8 @@ class UserActivate(generics.GenericAPIView):
 			response['error'] = ['No correct token']
 			return Response(response, status=status.HTTP_401_UNAUTHORIZED)
 		except Exception as exc:
-			response = self.handle_exception(exc)
+			# response = self.handle_exception(exc)
+			response['error'] = [str(exc)]
 			return Response(response, status=status.HTTP_401_UNAUTHORIZED)
 
 

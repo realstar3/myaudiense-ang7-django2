@@ -1,4 +1,4 @@
-<div class="row justify-content-center align-items-center" style="margin: 50px 0 50px 0">
+<div class="row justify-content-center align-items-center my-3" >
   <div *ngIf="!active_status" class="col-xl-6 " style="margin: 0 0 50px 0">
     <table >
       <tr >
@@ -44,68 +44,120 @@
 
   </div>
 
-  <div *ngIf="!isLoggedIn&&!active_status" class=" jumbotron col-xl-6" >
-    <div class="row" style="margin: 0 10px 50px 10px">
-      <form (submit)="signUp()" >
-      <table class="-align-left" >
-        <tr>
-          <td style="padding-bottom: 30px">
-            <div style="font-size: 35px; font-weight: bold">Sign Up</div>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding-bottom: 30px">
-            <div style="font-size: 20px; font-weight: bold">Don’t miss out on another event again.</div>
-          </td>
-        </tr>
-        <tr class="d-flex">
-          <td class="col-5" style="padding-bottom: 30px">
-            <div style="font-size: 20px;">
-              <input [(ngModel)]="user.first_name" [ngModelOptions]="{standalone: true}" class="col-12" type="text" placeholder="First Name">
-            </div>
-          </td>
-          <td class="col-5"  style="padding-bottom: 30px">
-            <div style="font-size: 20px;">
-              <input [(ngModel)]="user.last_name" [ngModelOptions]="{standalone: true}" class="col-12" type="text" placeholder="Last Name">
-            </div>
-          </td>
-        </tr>
-        <tr class="d-flex">
-          <td class="col-10"  style="padding-bottom: 30px">
-            <div style="font-size: 20px;">
-              <input [(ngModel)]="user.username" [ngModelOptions]="{standalone: true}" class="col-12" type="email" placeholder="Email">
-            </div>
-          </td>
+  <div *ngIf="!isLoggedIn&&!active_status" class=" jumbotron col-xl-5 mx-xl-1" >
+    <div >
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <div class="form-group" style="font-size: 35px; font-weight: bold">Sign Up</div>
+        <div class="row">
 
-        </tr>
-        <tr class="d-flex">
-          <td class="col-10" style="padding-bottom: 30px">
-            <div style="font-size: 20px;">
-              <input  [(ngModel)]="user.password" [ngModelOptions]="{standalone: true}" class="col-12" type="password" placeholder="Password">
+          <div class="col-6 form-group">
+            <label>First Name</label>
+            <input type="text" formControlName="firstName" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.firstName.errors }" />
+            <div *ngIf="submitted && f.firstName.errors" class="invalid-feedback">
+              <div *ngIf="f.firstName.errors.required">First Name is required</div>
             </div>
-          </td>
+          </div>
+          <div class="col-6 form-group">
+            <label>Last Name</label>
+            <input type="text" formControlName="lastName" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.lastName.errors }" />
+            <div *ngIf="submitted && f.lastName.errors" class="invalid-feedback">
+              <div *ngIf="f.lastName.errors.required">Last Name is required</div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="text" formControlName="email" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
+          <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+            <div *ngIf="f.email.errors.required">Email is required</div>
+            <div *ngIf="f.email.errors.email">Email must be a valid email address</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" formControlName="password" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.password.errors }" />
+          <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+            <div *ngIf="f.password.errors.required">Password is required</div>
+            <div *ngIf="f.password.errors.minlength">Password must be at least 6 characters</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <span style="font-size: 17px;">
+          By clicking Sign Up, you agree to our Terms, Data Policy and Cookies Policy. You may receive SMS Notifications from us and can opt out any time.
+          </span>
+        </div>
+        <div align="center">
+          <re-captcha (captchaResponse)="handleCorrectCaptcha($event)"
+                      site_key="6Ld-E4kUAAAAAAqjiARzvTQmau6PswN1V85EBjoE"></re-captcha>
+        </div>
+        <div class="form-group row justify-content-center align-items-center my-4">
+          <button class="btn btn-outline-success my-2 my-sm-0">Sign Up</button>
 
-        </tr>
-        <tr class="d-flex">
-          <td  class="col-8"  style="padding-bottom: 30px">
-              <span style="font-size: 17px;">
-                By clicking Sign Up, you agree to our Terms, Data Policy and Cookies Policy. You may receive SMS Notifications from us and can opt out any time.
-              </span>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding-bottom: 20px">
-            <div style="margin-left: 20px">
-              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">SignUp</button>
-            </div>
-          </td>
-        </tr>
-      </table>
+        </div>
       </form>
+
     </div>
+    <!--<div class="row" style="margin: 0 10px 50px 10px">-->
+    <!--<form (submit)="signUp()" >-->
+    <!--<table class="-align-left" >-->
+    <!--<tr>-->
+    <!--<td style="padding-bottom: 30px">-->
+    <!--<div style="font-size: 35px; font-weight: bold">Sign Up</div>-->
+    <!--</td>-->
+    <!--</tr>-->
+    <!--<tr>-->
+    <!--<td style="padding-bottom: 30px">-->
+    <!--<div style="font-size: 20px; font-weight: bold">Don’t miss out on another event again.</div>-->
+    <!--</td>-->
+    <!--</tr>-->
+    <!--<tr class="d-flex">-->
+    <!--<td class="col-5" style="padding-bottom: 30px">-->
+    <!--<div style="font-size: 20px;">-->
+    <!--<input [(ngModel)]="user.first_name" [ngModelOptions]="{standalone: true}" class="col-12" type="text" placeholder="First Name">-->
+    <!--</div>-->
+    <!--</td>-->
+    <!--<td class="col-5"  style="padding-bottom: 30px">-->
+    <!--<div style="font-size: 20px;">-->
+    <!--<input [(ngModel)]="user.last_name" [ngModelOptions]="{standalone: true}" class="col-12" type="text" placeholder="Last Name">-->
+    <!--</div>-->
+    <!--</td>-->
+    <!--</tr>-->
+    <!--<tr class="d-flex">-->
+    <!--<td class="col-10"  style="padding-bottom: 30px">-->
+    <!--<div style="font-size: 20px;">-->
+    <!--<input [(ngModel)]="user.username" [ngModelOptions]="{standalone: true}" class="col-12" type="email" placeholder="Email">-->
+    <!--</div>-->
+    <!--</td>-->
+
+    <!--</tr>-->
+    <!--<tr class="d-flex">-->
+    <!--<td class="col-10" style="padding-bottom: 30px">-->
+    <!--<div style="font-size: 20px;">-->
+    <!--<input  [(ngModel)]="user.password" [ngModelOptions]="{standalone: true}" class="col-12" type="password" placeholder="Password">-->
+    <!--</div>-->
+    <!--</td>-->
+
+    <!--</tr>-->
+    <!--<tr class="d-flex">-->
+    <!--<td  class="col-8"  style="padding-bottom: 30px">-->
+    <!--<span style="font-size: 17px;">-->
+    <!--By clicking Sign Up, you agree to our Terms, Data Policy and Cookies Policy. You may receive SMS Notifications from us and can opt out any time.-->
+    <!--</span>-->
+    <!--</td>-->
+    <!--</tr>-->
+    <!--<tr>-->
+    <!--<td style="padding-bottom: 20px">-->
+    <!--<div style="margin-left: 20px">-->
+    <!--<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Sign Up</button>-->
+    <!--</div>-->
+    <!--</td>-->
+    <!--</tr>-->
+    <!--</table>-->
+    <!--</form>-->
+    <!--</div>-->
   </div>
 
-  <div *ngIf="active_status" class=" jumbotron col-xl-6" >
+  <div *ngIf="active_status" class=" jumbotron col-md-5 mx-md-1" >
     <div class="row" style="margin: 0 10px 50px 10px">
       <div style="font-size: 20px; font-weight: bold">
         Your account must be approved before you can access. please check your email for an update shortly.

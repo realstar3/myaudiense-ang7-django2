@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import {UserService} from '../../shared/services/user.service';
 import {ToastaService, ToastaConfig, ToastOptions, ToastData} from 'ngx-toasta';
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
 
 @Component({
@@ -18,6 +19,8 @@ export class FullComponent implements OnInit {
   showDarktheme = false;
   isMobile = false;
   isLoading = false;
+  registerForm: FormGroup;
+  submitted = false;
   credentials = { username: '', password: '' };
 
   public innerWidth: any;
@@ -27,9 +30,16 @@ export class FullComponent implements OnInit {
   constructor(
     public router: Router,
     private userService: UserService,
-    private toastaService: ToastaService, private toastaConfig: ToastaConfig,
+    private toastaService: ToastaService,
+    private toastaConfig: ToastaConfig,
+    private formBuilder: FormBuilder
   ) {
     this.toastaConfig.theme = 'default';
+     this.registerForm = this.formBuilder.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+    },
+      );
   }
 
   ngOnInit() {
@@ -38,6 +48,7 @@ export class FullComponent implements OnInit {
     }
     this.handleLayout();
   }
+  get f() { return this.registerForm.controls; }
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
@@ -71,6 +82,12 @@ export class FullComponent implements OnInit {
     return this.userService.isLoggedIn();
   }
   login() {
+    this.submitted = true;
+
+    // stop here if form is invalid
+    if (this.registerForm.invalid) {
+      return;
+    }
 
     this.isLoading = true;
     this.userService.login(this.credentials.username, this.credentials.password).subscribe(

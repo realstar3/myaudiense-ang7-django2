@@ -48,7 +48,7 @@ export class ChangePasswordComponent implements OnInit {
 			data => {
 				this.isLoading = false;
 				this.toastrService.success('Your password is changed successfully.');
-				// this.router.navigate(['/signin']);
+				this.router.navigate(['/starter']);
 			},
 			err => {
 				this.isLoading = false;

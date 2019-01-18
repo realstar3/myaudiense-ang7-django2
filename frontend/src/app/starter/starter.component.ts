@@ -1,6 +1,8 @@
 import { Component, AfterViewInit } from '@angular/core';
 import {UserService} from '../shared/services/user.service';
 import {ToastaConfig, ToastaService} from 'ngx-toasta';
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {MustMatch} from "../_helpers/must-match.validator";
 
 @Component({
   templateUrl: './starter.component.html'
@@ -8,14 +10,27 @@ import {ToastaConfig, ToastaService} from 'ngx-toasta';
 export class StarterComponent implements AfterViewInit {
   user = {first_name: '', last_name: '', username: '', password: '', }
   isLoading = false;
+  registerForm: FormGroup;
+  submitted = false;
   active_status = false;
   constructor(
     private userService: UserService,
     private toastaService: ToastaService,
     private toastaConfig: ToastaConfig,
+    private formBuilder: FormBuilder
   ) {
     this.toastaConfig.theme = 'default';
+    this.registerForm = this.formBuilder.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+    },
+      );
   }
+
+  get f() { return this.registerForm.controls; }
+
   get isLoggedIn() {
     return this.userService.isLoggedIn();
   }
@@ -23,29 +38,19 @@ export class StarterComponent implements AfterViewInit {
   /**
    * SignUp a user
    */
-  signUp() {
-    this.isLoading = true;
-    if (this.user.username.length < 1 ) {
-      this.toastaService.info('Email is invalid.');
+  onSubmit() {
+    this.submitted = true;
+
+    // stop here if form is invalid
+    if (this.registerForm.invalid) {
       return;
     }
-    if (this.user.first_name.length < 1 ) {
-      this.toastaService.info('First Name is invalid.');
-      return;
-    }
-    if (this.user.last_name.length < 1 ) {
-      this.toastaService.info('Last Name is invalid.');
-      return;
-    }
-    if (this.user.password.length < 1 ) {
-      this.toastaService.info('Password is invalid.');
-      return;
-    }
+
     const send_data = {
-      username: this.user.username,
-      first_name: this.user.first_name,
-      last_name: this.user.last_name,
-      password: this.user.password
+      username: this.registerForm.value['email'],
+      first_name: this.registerForm.value['firstName'],
+      last_name: this.registerForm.value['lastName'],
+      password: this.registerForm.value['password']
     };
     this.userService.register(send_data)
       .subscribe(
@@ -60,6 +65,5 @@ export class StarterComponent implements AfterViewInit {
           this.toastaService.error(err);
         }
       );
-
   }
 }
