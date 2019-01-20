@@ -14,18 +14,6 @@ export const ROUTES: RouteInfo[] = [
   //   submenu: []
   // },
   {
-    path: '/starter',
-    title: 'Home',
-    icon: 'mdi mdi-gauge',
-    class: '',
-    label: '',
-    labelClass: '',
-    extralink: false,
-    submenu: [],
-    logged: true,
-  },
-
-  {
     path: '/signin',
     title: 'LogIn',
     icon: 'mdi mdi-equal',
@@ -47,6 +35,29 @@ export const ROUTES: RouteInfo[] = [
     submenu: [],
     logged: false,
   },
+  {
+    path: '/starter',
+    title: 'Home',
+    icon: 'mdi mdi-gauge',
+    class: '',
+    label: '',
+    labelClass: '',
+    extralink: false,
+    submenu: [],
+    logged: true,
+  },
+  {
+    path: '/profile',
+    title: 'PROFILE',
+    icon: 'mdi mdi-toggle-switch',
+    class: '',
+    label: '',
+    labelClass: '',
+    extralink: false,
+    submenu: [],
+    logged: true,
+  },
+
   {
     path: '/component/alert',
     title: 'Marketplace',
@@ -140,17 +151,17 @@ export const ROUTES: RouteInfo[] = [
   //   extralink: false,
   //   submenu: []
   // },
-  {
-    path: '/component/buttons',
-    title: 'Button',
-    icon: 'mdi mdi-toggle-switch',
-    class: '',
-    label: '',
-    labelClass: '',
-    extralink: false,
-    submenu: [],
-    logged: true,
-  },
+  // {
+  //   path: '/component/buttons',
+  //   title: 'Button',
+  //   icon: 'mdi mdi-toggle-switch',
+  //   class: '',
+  //   label: '',
+  //   labelClass: '',
+  //   extralink: false,
+  //   submenu: [],
+  //   logged: true,
+  // },
   // {
   //   path: '/component/cards',
   //   title: 'Card',

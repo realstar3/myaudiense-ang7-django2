@@ -4,7 +4,7 @@ import {UserService} from '../../shared/services/user.service';
 import {ToastaService} from 'ngx-toasta';
 
 @Component({
-  template: ''
+  templateUrl: './active.component.html'
 })
 export class ActiveComponent implements OnInit {
   constructor(
@@ -14,6 +14,8 @@ export class ActiveComponent implements OnInit {
       private toastaService: ToastaService
     ) {}
   token: string;
+  activated = true;
+  username;
   myData: any[] = [];
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -24,12 +26,21 @@ export class ActiveComponent implements OnInit {
     this.userService.activeRequest(this.token).subscribe(
       (res: any) => {
          this.myData = res.data;
-         this.router.navigate(['/starter']);
+         this.activated = true;
+
       },
       err => {
        this.toastaService.error(err);
        this.router.navigate(['/starter']);
       }
     );
+  }
+
+  get isLoggedIn() {
+    return this.userService.isLoggedIn();
+  }
+
+  onSubmit(){
+
   }
 }

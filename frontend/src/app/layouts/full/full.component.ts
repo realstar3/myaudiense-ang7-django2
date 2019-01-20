@@ -21,7 +21,7 @@ export class FullComponent implements OnInit {
   isLoading = false;
   registerForm: FormGroup;
   submitted = false;
-  credentials = { username: '', password: '' };
+  // credentials = { username: '', password: '' };
 
   public innerWidth: any;
 
@@ -90,18 +90,20 @@ export class FullComponent implements OnInit {
     }
 
     this.isLoading = true;
-    this.userService.login(this.credentials.username, this.credentials.password).subscribe(
-      data => {
-        this.isLoading = false;
-        this.toastaService.success('Success');
-        this.router.navigate(['/']);
-      },
-      errMessage => {
-        this.isLoading = false;
-        // if (err.indexOf("Unauthorized") != -1)
-        this.toastaService.error(errMessage);
-      }
-    );
+    this.userService.login(this.registerForm.value['email'], this.registerForm.value['password'])
+      .subscribe(
+        data => {
+          this.isLoading = false;
+          this.toastaService.success('Success');
+          this.router.navigate(['/']);
+        },
+        errMessage => {
+          this.isLoading = false;
+          // if (err.indexOf("Unauthorized") != -1)
+          this.toastaService.error(errMessage);
+        }
+
+      )
   }
 
   // cssChange(e) {
