@@ -3,6 +3,8 @@ import {UserService} from '../shared/services/user.service';
 import {ToastaConfig, ToastaService} from 'ngx-toasta';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {MustMatch} from "../_helpers/must-match.validator";
+import {ExistSpace} from "../_helpers/exist-space.validator";
+
 
 @Component({
   templateUrl: './starter.component.html'
@@ -23,9 +25,12 @@ export class StarterComponent implements AfterViewInit {
     this.registerForm = this.formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
+      userName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-    },
+    },{
+      validator: [ExistSpace('userName')]
+      }
       );
   }
 
@@ -47,7 +52,8 @@ export class StarterComponent implements AfterViewInit {
     }
 
     const send_data = {
-      username: this.registerForm.value['email'],
+      username: this.registerForm.value['userName'],
+      email: this.registerForm.value['email'],
       first_name: this.registerForm.value['firstName'],
       last_name: this.registerForm.value['lastName'],
       password: this.registerForm.value['password']

@@ -4,7 +4,8 @@ import {UserService} from '../../shared/services/user.service';
 import {ToastaService} from 'ngx-toasta';
 
 @Component({
-  templateUrl: './active.component.html'
+  template:''
+  // templateUrl: './active.component.html'
 })
 export class ActiveComponent implements OnInit {
   constructor(
@@ -27,6 +28,7 @@ export class ActiveComponent implements OnInit {
       (res: any) => {
          this.myData = res.data;
          this.activated = true;
+         this.router.navigate(['/starter']);
 
       },
       err => {

@@ -7,6 +7,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import {UserService} from '../services/user.service';
+import {Router} from "@angular/router";
 declare var $: any;
 @Component({
   selector: 'app-navigation',
@@ -17,6 +18,7 @@ export class NavigationComponent implements AfterViewInit {
 
   public config: PerfectScrollbarConfigInterface = {};
   constructor(private modalService: NgbModal,
+              public router: Router,
               private userService: UserService) {}
 
   // This is for Notifications
@@ -84,10 +86,18 @@ export class NavigationComponent implements AfterViewInit {
   ];
   logout() {
     this.userService.logout();
+    this.router.navigate(['/starter']);
   }
   get isLoggedIn() {
     return this.userService.isLoggedIn();
   }
+  get loggedInData() {
+    return this.userService.getLoggedInData();
+  }
 
   ngAfterViewInit() {}
+
+  mylink(){
+    this.router.navigate(['/profile'], { queryParams: { me: true } });
+  }
 }

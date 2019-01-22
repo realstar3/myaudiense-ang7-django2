@@ -30,6 +30,14 @@
             </div>
           </div>
           <div class="form-group">
+            <label>User Name</label>
+            <input type="text" formControlName="userName" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.userName.errors }" />
+            <div *ngIf="submitted && f.userName.errors" class="invalid-feedback">
+              <div *ngIf="f.userName.errors.required">User name is required</div>
+              <div *ngIf="f.userName.errors.existSpace">User Name can not be contain space.</div>
+            </div>
+          </div>
+          <div class="form-group">
             <label>Email</label>
             <input type="text" formControlName="email" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
             <div *ngIf="submitted && f.email.errors" class="invalid-feedback">

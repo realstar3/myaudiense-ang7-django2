@@ -18,11 +18,11 @@ export class UserService {
   private isMobile:boolean = false;
 
   constructor(private http: Http){
-    // localStorage.setItem('api_auth_token', '');
-    this.loggedIn = !!localStorage.getItem('api_auth_token');
+
+    this.loggedIn = !!localStorage.getItem('auth_token');
     if(this.loggedIn)
       try {
-        this.loggedInData = JSON.parse(localStorage.getItem('api_user_data'));
+        this.loggedInData = JSON.parse(localStorage.getItem('my_profile'));
       } catch(e) {
         alert(e); // error in the above string (in this case, yes)!
       }
@@ -37,22 +37,22 @@ export class UserService {
   /**
    * Log the user in
    */
-  login(username: string, password: string): Observable<any> {
+  login(email: string, password: string): Observable<any> {
     let userData = {
-      username : username,
+      email : email,
       password : password
     }
     return this.http.post(`${this.apiUrl}/api/auth/login/`, userData)
       .pipe(
         tap(data => {
-          console.log(data['_body'])
+          // console.log(data['_body'])
           let res =  JSON.parse(data['_body'])
           if (res['token'])
           {
             this.loggedIn = true;
             this.loggedInData = res['user'];
-            localStorage.setItem('api_auth_token', res['token']);
-            localStorage.setItem('api_user_data', JSON.stringify(res['user']));
+            localStorage.setItem('auth_token', res['token']);
+            localStorage.setItem('my_profile', JSON.stringify(res['user']));
           }
         }),
         catchError(this.handleError)
@@ -68,7 +68,7 @@ export class UserService {
     return this.http.post(`${this.apiUrl}/api/auth/signup/`, userData)
       .pipe(
         tap(res => {
-          console.log(res['._body'])
+          // console.log(res['._body'])
 
         }),
         catchError(this.handleError)
@@ -76,14 +76,14 @@ export class UserService {
     // );
 
   }
-  sendMailFor(username:string):Observable<any>{
-    let body = {username:username};
+  sendMailFor(email:string):Observable<any>{
+    let body = {email:email};
     return this.http.post(`${this.apiUrl}/api/auth/SendMailForPassword/`, body)
       .pipe(
         tap(data => {
           this.loggedIn = false;
           this.loggedInData = [];
-          localStorage.setItem('api_auth_token', '');
+          localStorage.setItem('auth_token', '');
         }),
         catchError(this.handleError)
       )
@@ -105,9 +105,9 @@ export class UserService {
     return this.loggedInData;
   }
 
-  changePasswordFor(username:string, userpass:string, token:string):Observable<any>{
+  changePasswordFor(email:string, userpass:string, token:string):Observable<any>{
     let body = {
-      username:username,
+      email:email,
       password:userpass,
       token:token,
     };
@@ -116,7 +116,7 @@ export class UserService {
         tap(data =>{
           this.loggedIn = false;
           this.loggedInData=[];
-          localStorage.setItem('api_auth_token', '')
+          localStorage.setItem('auth_token', '')
         }),
         catchError(this.handleError)
       )
@@ -130,8 +130,8 @@ export class UserService {
    * Log the user out
    */
   public logout() {
-    localStorage.removeItem('api_auth_token');
-    localStorage.removeItem('api_user_data');
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('my_profile');
     this.loggedInData = {};
     this.loggedIn = false;
 
@@ -151,14 +151,26 @@ export class UserService {
           {
             this.loggedIn = true;
             this.loggedInData = res.user;
-            localStorage.setItem('api_auth_token', res.token);
-            localStorage.setItem('api_user_data', JSON.stringify(res.user));
+            localStorage.setItem('auth_token', res.token);
+            localStorage.setItem('my_profile', JSON.stringify(res.user));
           }
         }),
         catchError(this.handleError)
       );
 
   }
+  userProfile(username):Observable<any>{
+    let send_data = "username=" + username;
+    return this.http.get(AppSettings.API_ENDPOINT+'/api/auth/Profile?' + send_data)
+      .pipe(
+        tap(data=>{
+          let res = JSON.parse(data['_body'])
+          localStorage.setItem('user_profile', JSON.stringify(res))
+        }),
+        catchError(this.handleError)
+      )
+  }
+
 
   /**
    * Handle any errors from the API

@@ -9,6 +9,7 @@ from django.conf import settings
 from .serializers import UserSerializer, UserLogoutSerializer
 
 from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import check_password
 from . import key_config
 from .models import AuthToken
 from rest_framework.response import Response
@@ -22,21 +23,28 @@ class UserLogin(generics.GenericAPIView):
 	serializer_class = UserSerializer
 
 	def post(self, request, *args, **kw):
-		username = self.request.data.get(key_config.KEY_USERNAME)
+		email = self.request.data.get(key_config.KEY_EMAIL)
 		password = self.request.data.get(key_config.KEY_PASSWORD)
-
-		user = authenticate(username=username, password=password)
 		response = {}
-		if user:
+		try:
+			user = User.objects.get(email=email)
+			pwd_valid = check_password(password, user.password)
+			# user = authenticate(username=email, password=password)
 
-			auth_token = AuthToken.objects.create(user=user)
+			if user and pwd_valid:
 
-			if auth_token:
-				response = UserLoginSerializer(auth_token).data
-				return Response(response, status=status.HTTP_200_OK)
+				auth_token = AuthToken.objects.create(user=user)
 
-		else:
-			response['error'] = ['Invalid Credentials']
+				if auth_token:
+					response['token'] = auth_token.token
+					response['user'] = ProfileSerializer(auth_token).data
+					return Response(response, status=status.HTTP_200_OK)
+
+			else:
+				response['error'] = ['Invalid Credentials']
+				return Response(response, status=status.HTTP_401_UNAUTHORIZED)
+		except Exception as exc:
+			response['error'] = [str(exc)]
 			return Response(response, status=status.HTTP_401_UNAUTHORIZED)
 
 
@@ -47,12 +55,12 @@ class UserSignUp(generics.GenericAPIView):
 	def post(self, request, *args, **kw):
 		response = {}
 		username = self.request.data.get(key_config.KEY_USERNAME)
+		email = self.request.data.get(key_config.KEY_EMAIL)
 		password = self.request.data.get(key_config.KEY_PASSWORD)
 		first_name = self.request.data.get(key_config.KEY_FIRST_NAME)
 		last_name = self.request.data.get(key_config.KEY_LAST_NAME)
 
-		user = User.objects.filter(
-			username__iexact=username)
+		user = User.objects.filter(username__iexact=username)
 		if user:
 
 			response['error'] = ['User-name Already Exist']
@@ -60,16 +68,17 @@ class UserSignUp(generics.GenericAPIView):
 		else:
 			now = timezone.now()
 			extra_data = {'first_name': first_name, 'last_name': last_name}
-			user = User(username=username, email=username,
+			user = User(username=username, email=email,
 						is_staff=False, is_active=False,
 						is_superuser=False,
 						date_joined=now,
 						**extra_data)
 			user.set_password(password)
 			user.save()
-
+			profile = Profile(user=user)
+			profile.save()
 			auth_token = AuthToken.objects.create(user=user)
-			send_flag = send_email(auth_token.token, first_name + " " + last_name, username)
+			send_flag = send_email(auth_token.token, first_name + " " + last_name, email)
 			if auth_token and send_flag:
 				return Response(response, status=status.HTTP_200_OK)
 			if not send_flag:
@@ -122,13 +131,13 @@ class SendMailForResetPassword(generics.GenericAPIView):
 	serializer_class = UserSerializer
 
 	def post(self, request, *args, **kw):
-		username = self.request.data.get(key_config.KEY_USERNAME)
+		email = self.request.data.get(key_config.KEY_EMAIL)
 		response = {}
 		try:
-			user = User.objects.get(username=username)
+			user = User.objects.get(email=email)
 			auth_token = AuthToken.objects.filter(user_id=user.id, is_expired=False).first()
 			if auth_token:
-				send_email_reset_password_link(user.username, str(auth_token.token))
+				send_email_reset_password_link(user.email, str(auth_token.token))
 				return Response(response, status=status.HTTP_200_OK)
 		except:
 			pass
@@ -136,29 +145,25 @@ class SendMailForResetPassword(generics.GenericAPIView):
 		return Response(response, status=status.HTTP_401_UNAUTHORIZED)
 
 
+class UserProfile(generics.GenericAPIView):
+	# serializer_class = ProfileSerializer
+
+	def get(self, request, *args, **kw):
+		username = self.request.query_params.get(key_config.KEY_USERNAME)
 
 
-class ChangePassword(generics.GenericAPIView):
-	serializer_class = UserSerializer
-
-	def post(self, request, *args, **kw):
-		username = self.request.data.get(key_config.KEY_USERNAME)
-		userpass = self.request.data.get(key_config.KEY_PASSWORD)
-		token = self.request.data.get("token")
 		response = {}
 		try:
 			user = User.objects.get(username=username)
-			auth_token = AuthToken.objects.get(token=token)
-			if user.id == auth_token.user_id:
-				user.set_password(userpass)
-				user.save()
+			profile = Profile.objects.get(user=user)
+			if profile:
+				response = ProfileSerializer(profile).data
 				return Response(response, status=status.HTTP_200_OK)
 		except:
 			pass
 
 		response['error'] = ['No exist this email']
 		return Response(response, status=status.HTTP_401_UNAUTHORIZED)
-
 
 
 def send_email_reset_password_link(email=None, token=None):

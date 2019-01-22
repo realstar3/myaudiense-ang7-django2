@@ -67,7 +67,7 @@ MIDDLEWARE = [
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'backend.urls'
+ROOT_URLCONF = 'django_project.urls'
 
 TEMPLATES = [
 	{
@@ -85,7 +85,7 @@ TEMPLATES = [
 	},
 ]
 
-WSGI_APPLICATION = 'backend.wsgi.application'
+WSGI_APPLICATION = 'django_project.wsgi.application'
 
 
 # Database
@@ -139,9 +139,9 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 REST_FRAMEWORK = {
-	# 'DEFAULT_AUTHENTICATION_CLASSES': (
-	# 	'auth_token.authentication.RestAuthentication',
-	# ),
+	'DEFAULT_AUTHENTICATION_CLASSES': (
+		'auth_token.authentication.RestAuthentication',
+	),
 	'DEFAULT_PERMISSION_CLASSES': (
 		'rest_framework.permissions.AllowAny',
 	),

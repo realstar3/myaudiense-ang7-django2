@@ -1,0 +1,14 @@
+/vendor
+/node_modules
+/.idea
+backend/.env
+backend/.idea
+frontend/.idea
+frontend/node_modules
+bower_components
+
+.DS_Store
+*.lock
+#python package
+py36/
+

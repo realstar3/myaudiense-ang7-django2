@@ -11,7 +11,7 @@ import {UserService} from '../../shared/services/user.service';
 export class ChangePasswordComponent implements OnInit {
 
 	isLoading = false;
-	username;
+	email;
 	user_domain;
 	firs_password;
 	second_password;
@@ -26,12 +26,12 @@ export class ChangePasswordComponent implements OnInit {
 		// console.log('<<<< change-password comp started >>>');
 		this.route.queryParams.subscribe(
 			params => {
-				this.username = params['user_email'];
+				this.email = params['user_email'];
 				this.token = params['token'];
-				if(this.hasWhiteSpace(this.username))
-					this.username=this.username.split(' ').join('+');
+				if(this.hasWhiteSpace(this.email))
+					this.email=this.email.split(' ').join('+');
 
-				this.user_domain = this.username.split('@')[0] + '@';
+				this.user_domain = this.email.split('@')[0] + '@';
 
 			});
 	}
@@ -44,7 +44,7 @@ export class ChangePasswordComponent implements OnInit {
 			return;
 		}
 		this.isLoading = true;
-		this.userService.changePasswordFor(this.username, this.firs_password, this.token).subscribe(
+		this.userService.changePasswordFor(this.email, this.firs_password, this.token).subscribe(
 			data => {
 				this.isLoading = false;
 				this.toastrService.success('Your password is changed successfully.');

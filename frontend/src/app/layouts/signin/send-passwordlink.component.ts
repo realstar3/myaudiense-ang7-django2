@@ -10,7 +10,7 @@ import {ToastaService} from 'ngx-toasta';
 })
 
 export class ForgotPasswordComponent implements OnInit {
-	credentials = {username: '', password: ''};
+	credentials = {email: '', password: ''};
 	isLoading: boolean = false;
 	sendOK:boolean = false;
 	constructor(private userService: UserService,
@@ -23,13 +23,13 @@ export class ForgotPasswordComponent implements OnInit {
 
 	}
 	send(){
-		let username = this.credentials.username;
+		let email = this.credentials.email;
 		this.isLoading = true;
-		this.userService.sendMailFor(this.credentials.username).subscribe(
+		this.userService.sendMailFor(this.credentials.email).subscribe(
 			data =>{
 				this.sendOK = true;
 				this.isLoading = false;
-				this.toastrService.success('Sent password reset link to ' + this.credentials.username);
+				this.toastrService.success('Sent password reset link to ' + this.credentials.email);
 			},
 			err => {
 				this.isLoading = false;

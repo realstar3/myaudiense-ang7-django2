@@ -5,13 +5,15 @@ import {UserService} from '../../shared/services/user.service';
 import {Router} from '@angular/router';
 import {ToastaService} from 'ngx-toasta';
 
+import {ExistSpace} from "../../_helpers/exist-space.validator";
+
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.css']
 })
 export class SignupComponent implements OnInit {
-  credentials = { username: '', password: '' };
+  // credentials = { username: '', password: '' };
   recapcha_flag = true;
   isLoading = false;
   registerForm: FormGroup;
@@ -32,11 +34,13 @@ export class SignupComponent implements OnInit {
     this.registerForm = this.formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
+      userName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required]
     }, {
-      validator: MustMatch('password', 'confirmPassword')
+      validator: [MustMatch('password', 'confirmPassword'),
+      ExistSpace('userName')]
     });
 
   }
@@ -52,7 +56,7 @@ export class SignupComponent implements OnInit {
     }
 
     const send_data = {
-      username: this.registerForm.value['email'],
+      email: this.registerForm.value['email'],
       first_name: this.registerForm.value['firstName'],
       last_name: this.registerForm.value['lastName'],
       password: this.registerForm.value['password']

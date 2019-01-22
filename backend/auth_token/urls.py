@@ -11,7 +11,8 @@ urlpatterns = [
 	path('auth/Logout/', views.UserLogout.as_view()),
 	path('auth/Activate/', views.UserActivate.as_view()),
 	path('auth/SendMailForPassword/', views.SendMailForResetPassword.as_view()),
-	path('auth/ChangePassword/', views.ChangePassword.as_view()),
+	path('auth/Profile/', views.UserProfile.as_view()),
+
 
 ]
 # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

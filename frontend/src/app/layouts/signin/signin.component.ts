@@ -50,7 +50,7 @@ export class UserSignInComponent implements OnInit {
         data => {
           this.isLoading = false;
           this.toastaService.success('Success');
-          this.router.navigate(['/']);
+          this.router.navigate(['/starter']);
         },
         errMessage => {
           this.isLoading = false;

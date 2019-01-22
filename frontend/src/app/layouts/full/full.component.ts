@@ -81,6 +81,11 @@ export class FullComponent implements OnInit {
   get isLoggedIn() {
     return this.userService.isLoggedIn();
   }
+
+  get loggedInData() {
+    return this.userService.getLoggedInData();
+  }
+
   login() {
     this.submitted = true;
 
@@ -95,7 +100,7 @@ export class FullComponent implements OnInit {
         data => {
           this.isLoading = false;
           this.toastaService.success('Success');
-          this.router.navigate(['/']);
+
         },
         errMessage => {
           this.isLoading = false;

@@ -1,5 +1,5 @@
 from rest_framework import serializers, mixins
-from .models import AuthToken
+from .models import AuthToken, Profile
 from django.contrib.auth.models import User, Group
 
 
@@ -13,7 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
         Serializer customization
         '''
         model = User
-        fields = ('username', 'password', 'first_name', 'last_name')
+        fields = ('email', 'username', 'password', 'first_name', 'last_name')
         extra_kwargs = {
             'password': {
                 'write_only': True,
@@ -70,3 +70,17 @@ class UserLoginSerializer(serializers.ModelSerializer):
 
 class UserLogoutSerializer(serializers.Serializer):
     token = serializers.UUIDField()
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Profile
+		fields = ('image', 'friend', 'gender','location','user')
+
+	def to_representation(self, data):
+		data = super(ProfileSerializer, self).to_representation(data)
+		if data['user']:
+			user = User.objects.filter(id=data['user']).first()
+			if user:
+				data.update(UserSerializer(user).data)
+		return data
