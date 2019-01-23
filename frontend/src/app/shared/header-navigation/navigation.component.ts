@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, EventEmitter, Output } from '@angular/core';
+import {Component, AfterViewInit, EventEmitter, Output, OnInit, Input} from '@angular/core';
 import {
   NgbModal,
   ModalDismissReasons,
@@ -8,6 +8,8 @@ import {
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import {UserService} from '../services/user.service';
 import {Router} from "@angular/router";
+import { DomSanitizer } from '@angular/platform-browser';
+import {Observable} from "rxjs";
 declare var $: any;
 @Component({
   selector: 'app-navigation',
@@ -15,11 +17,68 @@ declare var $: any;
 })
 export class NavigationComponent implements AfterViewInit {
   @Output() toggleSidebar = new EventEmitter<void>();
+  private eventsSubscription: any
+
+  @Input() MyEvents: Observable<void>;
 
   public config: PerfectScrollbarConfigInterface = {};
+  imageToShow: any;
+  isImageLoading=true;
   constructor(private modalService: NgbModal,
               public router: Router,
-              private userService: UserService) {}
+              private sanitizer : DomSanitizer,
+              private userService: UserService)
+  {
+
+  }
+  ngOnInit(){
+
+
+  }
+  logout() {
+    this.userService.logout();
+    this.router.navigate(['/starter']);
+  }
+  get isLoggedIn() {
+    return this.userService.isLoggedIn();
+  }
+  get GetProfile() {
+    return this.userService.getMyProfile();
+  }
+
+  ngAfterViewInit() {
+    this.dispImage();
+    this.eventsSubscription = this.MyEvents.subscribe(() => {
+      this.dispImage();
+    })
+
+  }
+
+
+
+  dispImage() {
+    let img_url = this.GetProfile.image;
+    this.isImageLoading = true;
+    this.userService.getImage(img_url)
+      .subscribe(
+        data => {
+          let urlCreator = window.URL;
+          this.imageToShow = this.sanitizer.bypassSecurityTrustUrl(urlCreator.createObjectURL(data));
+          this.isImageLoading = false;
+        },
+        error => {
+          this.isImageLoading = false;
+          console.log(error);
+        });
+
+  }
+
+  mylink(){
+    this.router.navigate(['/profile'], { queryParams: { me: true } });
+  }
+
+
+
 
   // This is for Notifications
   notifications: Object[] = [
@@ -84,20 +143,4 @@ export class NavigationComponent implements AfterViewInit {
       time: '9:00 AM'
     }
   ];
-  logout() {
-    this.userService.logout();
-    this.router.navigate(['/starter']);
-  }
-  get isLoggedIn() {
-    return this.userService.isLoggedIn();
-  }
-  get loggedInData() {
-    return this.userService.getLoggedInData();
-  }
-
-  ngAfterViewInit() {}
-
-  mylink(){
-    this.router.navigate(['/profile'], { queryParams: { me: true } });
-  }
 }

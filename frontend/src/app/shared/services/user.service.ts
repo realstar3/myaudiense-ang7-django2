@@ -3,10 +3,10 @@ import { Injectable } from '@angular/core';
 // import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import {AppSettings} from '../../app.constant';
-import {catchError, tap} from 'rxjs/operators';
-import {Http, Response} from '@angular/http';
+import {catchError, tap, map} from 'rxjs/operators';
+import {Http, Response, ResponseContentType} from '@angular/http';
 import {throwError} from 'rxjs';
-import {HttpErrorResponse} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {ErrorObservable} from "rxjs-compat/observable/ErrorObservable";
 
 
@@ -14,26 +14,24 @@ import {ErrorObservable} from "rxjs-compat/observable/ErrorObservable";
 export class UserService {
   private apiUrl: string = AppSettings.API_ENDPOINT;
   private loggedIn: boolean = false;
-  private loggedInData: any = {};
+  private user_profile: any = {};
+  private my_profile: any = {};
   private isMobile:boolean = false;
+  private user_reviews:any = {};
+  private user_friends:any = {};
 
-  constructor(private http: Http){
+  constructor(private http: Http, private  httpClient:HttpClient){
 
     this.loggedIn = !!localStorage.getItem('auth_token');
     if(this.loggedIn)
       try {
-        this.loggedInData = JSON.parse(localStorage.getItem('my_profile'));
+        this.my_profile = JSON.parse(localStorage.getItem('my_profile'));
       } catch(e) {
         alert(e); // error in the above string (in this case, yes)!
       }
 
   }
-  getIsMobile(){
-    return this.isMobile;
-  }
-  setIsMobile(f){
-    this.isMobile = f;
-  }
+
   /**
    * Log the user in
    */
@@ -50,7 +48,7 @@ export class UserService {
           if (res['token'])
           {
             this.loggedIn = true;
-            this.loggedInData = res['user'];
+            this.my_profile = res['user'];
             localStorage.setItem('auth_token', res['token']);
             localStorage.setItem('my_profile', JSON.stringify(res['user']));
           }
@@ -82,7 +80,7 @@ export class UserService {
       .pipe(
         tap(data => {
           this.loggedIn = false;
-          this.loggedInData = [];
+          this.my_profile = [];
           localStorage.setItem('auth_token', '');
         }),
         catchError(this.handleError)
@@ -101,8 +99,19 @@ export class UserService {
   /**
    * Check if the user is logged in
    */
-  getLoggedInData() {
-    return this.loggedInData;
+  getMyProfile() {
+    return this.my_profile;
+  }
+  getUserProfile(){
+    return this.user_profile;
+  }
+
+  getReviews(){
+    return this.user_reviews;
+  }
+
+  getFriends(){
+    return this.user_friends;
   }
 
   changePasswordFor(email:string, userpass:string, token:string):Observable<any>{
@@ -115,7 +124,7 @@ export class UserService {
       .pipe(
         tap(data =>{
           this.loggedIn = false;
-          this.loggedInData=[];
+          this.my_profile=[];
           localStorage.setItem('auth_token', '')
         }),
         catchError(this.handleError)
@@ -132,7 +141,7 @@ export class UserService {
   public logout() {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('my_profile');
-    this.loggedInData = {};
+    this.my_profile = {};
     this.loggedIn = false;
 
   }
@@ -150,7 +159,7 @@ export class UserService {
           if (res.token)
           {
             this.loggedIn = true;
-            this.loggedInData = res.user;
+            this.my_profile = res.user;
             localStorage.setItem('auth_token', res.token);
             localStorage.setItem('my_profile', JSON.stringify(res.user));
           }
@@ -165,12 +174,48 @@ export class UserService {
       .pipe(
         tap(data=>{
           let res = JSON.parse(data['_body'])
-          localStorage.setItem('user_profile', JSON.stringify(res))
+          if(res['profile']!==undefined){
+            this.user_profile = JSON.parse(res['profile']);
+            localStorage.setItem('user_profile', res['profile']);
+          }else {
+            this.user_profile = [];
+            localStorage.setItem('user_profile', '');
+          }
+          if(res['reviews']!==undefined){
+            this.user_reviews = JSON.parse(res['reviews']);
+            localStorage.setItem('reviews', res['reviews']);
+          }else {
+            this.user_reviews = [];
+            localStorage.setItem('reviews', '');
+          }
+          if(res['friends']!==undefined){
+            this.user_friends = JSON.parse(res['friends']);
+            localStorage.setItem('friends', res['friends']);
+          }else {
+            this.user_friends = [];
+            localStorage.setItem('friends', '');
+          }
+
+
         }),
         catchError(this.handleError)
       )
   }
 
+  getImage(imageUrl: string): Observable<any> {
+        return this.httpClient
+            .get(imageUrl, { responseType: 'blob' })
+          .pipe(
+            tap( res=>{
+              let data = res['_body']
+
+
+            }),
+            // map(res => res['_body']),
+            catchError(this.handleError)
+            )
+
+    }
 
   /**
    * Handle any errors from the API

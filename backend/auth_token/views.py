@@ -2,11 +2,12 @@
 from rest_framework import status , generics , mixins
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.renderers import JSONRenderer
 
 from .serializers import *
 
 from django.conf import settings
-from .serializers import UserSerializer, UserLogoutSerializer
+from .serializers import UserSerializer, UserLogoutSerializer, FriendSerializer
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
@@ -34,10 +35,14 @@ class UserLogin(generics.GenericAPIView):
 			if user and pwd_valid:
 
 				auth_token = AuthToken.objects.create(user=user)
+				profile = Profile.objects.get(user=user)
+				if not profile:
+					profile = Profile(user=user)
+					profile.save()
 
 				if auth_token:
 					response['token'] = auth_token.token
-					response['user'] = ProfileSerializer(auth_token).data
+					response['user'] = ProfileSerializer(profile).data
 					return Response(response, status=status.HTTP_200_OK)
 
 			else:
@@ -151,18 +156,30 @@ class UserProfile(generics.GenericAPIView):
 	def get(self, request, *args, **kw):
 		username = self.request.query_params.get(key_config.KEY_USERNAME)
 
-
 		response = {}
 		try:
 			user = User.objects.get(username=username)
+			if not user or not user.is_active:
+				response['error'] = ['No exist this username']
+				return Response(response, status=status.HTTP_401_UNAUTHORIZED)
 			profile = Profile.objects.get(user=user)
 			if profile:
-				response = ProfileSerializer(profile).data
-				return Response(response, status=status.HTTP_200_OK)
-		except:
+				response['profile'] = JSONRenderer().render(ProfileSerializer(profile).data)
+
+			reviews_filter = Review.objects.filter(user=user.username)
+			if reviews_filter:
+				reviews = ReviewSerializer(reviews_filter, many=True).data
+				response['reviews'] = JSONRenderer().render(reviews)
+
+			friend_filter = Friend.objects.filter(user_one_id=user.id)
+			if friend_filter:
+				friends = FriendSerializer(friend_filter, many=True).data
+				response['friends'] = JSONRenderer().render(friends)
+			return Response(response, status=status.HTTP_200_OK)
+		except Exception as e:
 			pass
 
-		response['error'] = ['No exist this email']
+		response['error'] = ['No exist this username']
 		return Response(response, status=status.HTTP_401_UNAUTHORIZED)
 
 

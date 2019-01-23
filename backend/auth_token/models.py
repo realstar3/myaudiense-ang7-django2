@@ -5,8 +5,8 @@ from django.utils import timezone
 from datetime import timedelta
 from django.db import models
 from django_project.models import TimestampModel
-from django.contrib.auth import get_user_model
-User = get_user_model()
+from django.contrib.auth.models import User, Group
+
 
 
 def get_expiry():
@@ -63,17 +63,27 @@ class Profile(TimestampModel):
 
 class Review(TimestampModel):
 	event_text = models.TextField()
-	receiver_id = models.IntegerField()
-	sender_id = models.IntegerField()
-	positive = models.TextField()
-	negative = models.TextField()
+	user = models.CharField(max_length=100, blank=False, null=True)
+	sender = models.CharField(max_length=100, blank=False, null=True)
+	feedback = models.TextField()
+	is_positive = models.BooleanField()
 
 
-class RelationShip(TimestampModel):
+# status code Meaning
+# 0	Pending
+# 1	Accepted
+# 2	Declined
+# 3	Blocked
+
+class Friend(TimestampModel):
 	user_one_id = models.IntegerField()
 	user_two_id = models.IntegerField()
 	status = models.SmallIntegerField()
 	action_user_id = models.IntegerField()
+
+	class Meta:
+		unique_together = ("user_one_id", "user_two_id")
+
 
 
 

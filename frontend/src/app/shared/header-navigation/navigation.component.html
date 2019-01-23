@@ -2,40 +2,54 @@
 <!-- toggle and nav items -->
 <!-- ============================================================== -->
 <ul class="navbar-nav mr-auto float-left">
-    <li (click)="toggleSidebar.emit()" class="nav-item m-l-10 d-block d-lg-none"> <a class="nav-link sidebartoggler text-muted waves-effect waves-dark" href="javascript:void(0)">
-      <i class="ti-menu"></i></a>
-    </li>
+  <li (click)="toggleSidebar.emit()" class="nav-item m-l-10 d-block d-lg-none"> <a class="nav-link sidebartoggler text-muted waves-effect waves-dark" href="javascript:void(0)">
+    <i class="ti-menu"></i></a>
+  </li>
 </ul>
 <!-- ============================================================== -->
 <!-- User profile and search -->
 <!-- ============================================================== -->
 <ul *ngIf="isLoggedIn" class="navbar-nav my-lg-0 float-right">
 
-    <!-- ============================================================== -->
-    <!-- Profile -->
-    <!-- ============================================================== -->
-    <li class="nav-item dropdown" ngbDropdown placement="bottom-right">
-      <a ngbDropdownToggle class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="javascript:void(0)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span style="color: gold">{{ loggedInData.username }}&nbsp;</span><img src="../../../assets/images/users/profile.png" alt="user" class="profile-pic" /></a>
-        <div class="dropdown-menu animated slideInDown" ngbDropdownMenu>
-            <ul class="dropdown-user">
-                <li>
-                    <div class="dw-user-box">
-                        <div class="u-img"><img src="../../../assets/images/users/profile.png" alt="user"></div>
-                        <div class="u-text">
-                            <h4>{{ loggedInData.username }}</h4>
-                            <h4>{{ loggedInData.first_name }} &nbsp; {{ loggedInData.last_name }}</h4>
-                            <p class="text-muted">{{ loggedInData.email }}</p></div>
-                    </div>
-                </li>
-                <li role="separator" class="divider"></li>
-                <li><a (click)="mylink()"><i class="ti-user"></i> My Profile</a></li>
-                <li><a href="#"><i class="ti-wallet"></i> My Balance</a></li>
-                <li><a href="#"><i class="ti-email"></i> Inbox</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="#"><i class="ti-settings"></i> Account Setting</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a (click)="logout()"><i class="fa fa-power-off"></i> Logout</a></li>
-            </ul>
-        </div>
-    </li>
+  <!-- ============================================================== -->
+  <!-- Profile -->
+  <!-- ============================================================== -->
+  <li class="nav-item dropdown" ngbDropdown placement="bottom-right">
+    <a ngbDropdownToggle class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="javascript:void(0)"
+       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
+      style="color: gold;font-weight: bold">{{ GetProfile.username }}&nbsp;</span>
+      <img class="profile-pic" [src]="imageToShow" alt="user" *ngIf="!isImageLoading; else noCircleImageFound">
+      <ng-template #noCircleImageFound>
+        <img class="profile-pic" src="../../../assets/images/users/profile.png" alt="user">
+      </ng-template>
+
+    </a>
+    <div class="dropdown-menu animated slideInDown" ngbDropdownMenu>
+      <ul class="dropdown-user">
+        <li>
+          <div class="dw-user-box">
+            <div class="u-img">
+              <img [src]="imageToShow" alt="user" *ngIf="!isImageLoading; else noImageFound">
+              <ng-template #noImageFound>
+                <img src="../../../assets/images/users/profile.png" alt="user">
+              </ng-template>
+            </div>
+            <div class="u-text">
+              <h4>{{ GetProfile.username }}</h4>
+              <h4>{{ GetProfile.first_name }} &nbsp; {{ GetProfile.last_name }}</h4>
+              <p class="text-muted">{{ GetProfile.email }}</p></div>
+          </div>
+        </li>
+        <li role="separator" class="divider"></li>
+        <li><a (click)="mylink()"><i class="ti-user"></i> My Profile</a></li>
+        <!--<li><a href="/profile?me"><i class="ti-user"></i> My Profile</a></li>
+        <li><a href="#"><i class="ti-wallet"></i> My Balance</a></li>
+        <li><a href="#"><i class="ti-email"></i> Inbox</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="#"><i class="ti-settings"></i> Account Setting</a></li>-->
+        <li role="separator" class="divider"></li>
+        <li><a (click)="logout()"><i class="fa fa-power-off"></i> Logout</a></li>
+      </ul>
+    </div>
+  </li>
 </ul>

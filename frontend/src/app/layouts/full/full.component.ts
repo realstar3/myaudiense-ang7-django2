@@ -1,10 +1,11 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import {Component, OnInit, HostListener, Output, EventEmitter} from '@angular/core';
 import { Router } from '@angular/router';
 
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import {UserService} from '../../shared/services/user.service';
 import {ToastaService, ToastaConfig, ToastOptions, ToastData} from 'ngx-toasta';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {Subject} from "rxjs";
 
 
 @Component({
@@ -13,6 +14,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
   styleUrls: ['./full.component.scss']
 })
 export class FullComponent implements OnInit {
+  @Output() AfterLogon = new EventEmitter<void>();
   color = 'defaultdark';
   showSettings = false;
   showMinisidebar = false;
@@ -22,7 +24,7 @@ export class FullComponent implements OnInit {
   registerForm: FormGroup;
   submitted = false;
   // credentials = { username: '', password: '' };
-
+  private eventsSubject: Subject<void> = new Subject<void>();
   public innerWidth: any;
 
   public config: PerfectScrollbarConfigInterface = {};
@@ -41,6 +43,9 @@ export class FullComponent implements OnInit {
     },
       );
   }
+
+
+
 
   ngOnInit() {
     if (this.router.url === '/') {
@@ -82,8 +87,8 @@ export class FullComponent implements OnInit {
     return this.userService.isLoggedIn();
   }
 
-  get loggedInData() {
-    return this.userService.getLoggedInData();
+  get GetProfile() {
+    return this.userService.getMyProfile();
   }
 
   login() {
@@ -100,6 +105,7 @@ export class FullComponent implements OnInit {
         data => {
           this.isLoading = false;
           this.toastaService.success('Success');
+          this.eventsSubject.next();
 
         },
         errMessage => {

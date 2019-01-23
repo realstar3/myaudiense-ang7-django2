@@ -2,7 +2,7 @@
   <div class="row" *ngIf="!isMe&&!isSelected">
     <div class="jumbotron col-md-6 offset-md-3">
       <div>
-        <form (ngSubmit)="selectProfile()" #userForm="ngForm">
+        <form (ngSubmit)="changeProfile(username)" #userForm="ngForm">
 
           <div class="row">
             <div class="col-md-8 offset-md-2">
@@ -39,18 +39,22 @@
     <div class="col-md-6 my-3">
       <div class="row">
         <div class="col-6 ">
-          <img style="width: 150px; height: 150px" class="img-circle" src="../../../assets/images/users/profile.png">
+          <img style="width: 150px; height: 150px" class="img-circle" [src]="imageToShow" alt="Place image title" *ngIf="!isImageLoading; else noImageFound">
+          <ng-template #noImageFound>
+            <img style="width: 150px; height: 150px" class="img-circle" src="../../../assets/images/users/profile.png" alt="{{ username }}">
+          </ng-template>
+
         </div>
         <div class="col-6 ">
 
           <div >
             <label>
-              {{ profile.first_name }} &nbsp;{{ profile.last_name }}
+              {{GetProfile.first_name}} &nbsp;{{ GetProfile.last_name }}
             </label>
           </div>
           <div >
             <label>
-              ({{ profile.username }})
+              ({{ GetProfile.username }})
             </label>
           </div>
           <div class="row my-1">
@@ -59,7 +63,7 @@
             </div>
 
             <div class="col-10 text-left">
-              <span style="font-size: 20px">123</span>
+              <span style="font-size: 20px">{{ positive_reviews }}</span>
             </div>
           </div>
           <div class="row">
@@ -68,7 +72,7 @@
             </div>
 
             <div class="col-10 text-left">
-              <span style="font-size: 20px">3</span>
+              <span style="font-size: 20px">{{ negative_reviews }}</span>
             </div>
           </div>
 
@@ -83,44 +87,29 @@
   <div class="row" *ngIf="isSelected">
     <div class="jumbotron col-md-5 p-4">
       <div class="row px-3">
-        <label>Friends(1,234)</label>
+        <label>Friends({{ GetFriends.length }})</label>
 
       </div>
 
       <div class="row ">
 
-        <div class="col-4 my-1">
-          <img  class="person-image" src="../../../assets/images/users/profile.png">
-        </div>
-        <div class="col-4 my-1">
-          <img  class="person-image" src="../../../assets/images/users/profile.png">
-        </div>
-        <div class="col-4 my-1">
-          <img  class="person-image" src="../../../assets/images/users/profile.png">
-        </div>
-        <div class="col-4 my-1">
-          <img  class="person-image" src="../../../assets/images/users/profile.png">
-        </div>
-        <div class="col-4 my-1">
-          <img  class="person-image" src="../../../assets/images/users/profile.png">
-        </div>
-        <div class="col-4 my-1">
-          <img  class="person-image" src="../../../assets/images/users/profile.png">
-        </div>
-        <div class="col-4 my-1">
-          <img  class="person-image" src="../../../assets/images/users/profile.png">
-        </div>
-        <div class="col-4 my-1">
-          <img  class="person-image" src="../../../assets/images/users/profile.png">
-        </div>
-        <div class="col-4 my-1">
-          <img  class="person-image" src="../../../assets/images/users/profile.png">
-        </div>
+        <ng-container *ngFor="let friend of GetFriends; let cnt = index" >
+          <div class="col-4 my-1">
+
+
+
+            <img *ngIf="isFriendImageLoading[cnt]" style="cursor: pointer;" (click)="changeProfile(friend['user_two_id'].username)"  href="#" class="person-image" src="../../../assets/images/users/profile.png">
+
+            <img *ngIf="!isFriendImageLoading[cnt]" style="cursor: pointer;" (click)="changeProfile(friend['user_two_id'].username)" [alt]="friend['user_two_id'].username" class="person-image" [src]="imageFriendToShow[cnt]" >
+
+          </div>
+        </ng-container>
+
 
       </div>
     </div>
 
-
+    <!-- -->
     <div class=" col-md-7 ">
       <div class="row">
         <div *ngIf="!isMe&&isLoggedIn" class="jumbotron col-md-5 ml-3 p-1">
@@ -146,56 +135,45 @@
           </div>
         </div>
       </div>
-      <div class="row jumbotron p-3 m-1">
-        <table >
-          <tr class="row">
-            <td class="col-2 m-1 p-1">
-              <img style="width: 70px; height: auto" class="img-circle" src="../../../assets/images/users/profile.png">
-            </td>
+      <ng-container *ngFor="let review of GetReviews; let c = index">
+        <div class="row jumbotron p-3 m-1">
 
-            <td class="col-8 m-1 p-1">
-              John Smith bought XXXX tickets from Jonny Appleseed December 29, 2017
-            </td>
-          </tr>
-          <tr class="row ">
-            <td class="col-2 m-1 p-1">
-              <div class="col-3 offset-1 ">
-                <img style="width: 30px;height: 30px" class="img-circle" src="../../../assets/images/icons8-plus-512.png">
-              </div>
+          <table class="flex-fill">
+            <tr class="row ">
+              <td class="col-2 m-1 p-1 ">
 
-            </td>
+                <img  *ngIf="!isFeedbackImageLoading[c]" (click)="changeProfile(review.sender)" style="cursor: pointer;width: 70px; height: auto" class="img-circle" [src]="feedbackImageToShow[c]">
 
-            <td class="col-8 m-1 p-1">
-              Transaction went smoothly! Would buy from again!
-            </td>
-          </tr>
-        </table>
-      </div>
-      <div class="row jumbotron p-3 m-1">
-        <table>
-          <tr class="row">
-            <td class="col-2 m-1 p-1">
-              <img style="width: 70px; height: auto" class="img-circle" src="../../../assets/images/users/profile.png">
-            </td>
+                <img  *ngIf="isFeedbackImageLoading[c]" (click)="changeProfile(review.sender)" style="cursor: pointer;width: 70px; height: auto" class="img-circle" src="../../../assets/images/users/profile.png" >
 
-            <td class="col-8 m-1 p-1">
-              Jonny Appleseed left a negative review December 2, 2017
-            </td>
-          </tr>
-          <tr class="row ">
-            <td class="col-2 m-1 p-1">
-              <div class="col-3 offset-1 ">
-                <img style="width: 30px;height: 30px" class="img-circle" src="../../../assets/images/icons8-minus-512.png">
-              </div>
 
-            </td>
 
-            <td class="col-8 m-1 p-1">
-              Horrible seller!
-            </td>
-          </tr>
-        </table>
-      </div>
+              </td>
+
+              <td class="col-8 m-1 p-1 ">
+                {{ review.event_text }}
+              </td>
+            </tr>
+            <tr class="row ">
+              <td class="col-2 m-1 p-1">
+                <div class="col-3 offset-1 ">
+                  <img *ngIf="review['is_positive']==true"  style="width: 30px;height: 30px" class="img-circle" src="../../../assets/images/icons8-plus-512.png">
+                  <img *ngIf="review['is_positive']==false" style="width: 30px;height: 30px" class="img-circle" src="../../../assets/images/icons8-minus-512.png">
+                </div>
+
+
+              </td>
+
+              <td class="col-8 m-1 p-1 ">
+                {{ review.feedback }}
+              </td>
+            </tr>
+          </table>
+
+
+
+        </div>
+      </ng-container>
 
     </div>
   </div>
