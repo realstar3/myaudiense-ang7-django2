@@ -34,6 +34,10 @@ ALLOWED_HOSTS = ['*']
 
 SITE_DOMAIN = env('SITE_DOMAIN')
 
+# AWS Setting
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+BUCKET_NAME = env('BUCKET_NAME')
 # Mail Settings
 ANYMAIL = {
 	"MAILGUN_API_KEY": env('MAILGUN_API_KEY'),
@@ -44,15 +48,20 @@ DEFAULT_FROM_EMAIL = "noreply@myaudiens.com"
 # Application definition
 
 INSTALLED_APPS = [
+	'channels',
+	'messaging',
 	'django.contrib.admin',
 	'django.contrib.auth',
 	'django.contrib.contenttypes',
 	'django.contrib.sessions',
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
+
 	'rest_framework',
 	'auth_token',
-	'corsheaders'
+	'corsheaders',
+
+
 
 ]
 
@@ -68,7 +77,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'django_project.urls'
-
+# AUTH_USER_MODEL = 'auth_token.User'
 TEMPLATES = [
 	{
 		'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -87,6 +96,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'django_project.wsgi.application'
 
+ASGI_APPLICATION = 'django_project.asgi.application'
+
+CHANNEL_LAYERS = {
+	'default': {
+		'BACKEND': 'channels_redis.core.RedisChannelLayer',
+		'CONFIG': {
+			"hosts": [('127.0.0.1', 6379)],
+		},
+	},
+}
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -154,7 +173,7 @@ CORS_ORIGIN_WHITELIST = (
 	'http://localhost',
 	'http://' + env('SITE_DOMAIN'),
 )
-#
+
 CORS_ALLOW_HEADERS = default_headers + (
 	'x-auth-token',
 	'x-auth-id',

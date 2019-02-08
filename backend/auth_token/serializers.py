@@ -1,6 +1,6 @@
 from rest_framework import serializers, mixins
-from .models import AuthToken, Profile, Review, Friend
-from django.contrib.auth.models import User, Group
+from .models import AuthToken, Profile, Review, Friend, Notification
+from django.contrib.auth.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -40,11 +40,6 @@ class UserSerializer(serializers.ModelSerializer):
 	#     instance.save()
 	#     return instance
 
-
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
-	class Meta:
-		model = Group
-		fields = ('url', 'name')
 
 
 class UserLoginSerializer(serializers.ModelSerializer):
@@ -103,17 +98,25 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class FriendSerializer(serializers.ModelSerializer):
+
 	class Meta:
 		model = Friend
 		fields = ('user_one_id', 'user_two_id', 'status', 'action_user_id')
 
-	def to_representation(self, instance):
-		data = super(FriendSerializer, self).to_representation(instance)
-		if data['user_two_id'] and int(data['status'])==1:
-			user = User.objects.filter(id=data['user_two_id']).first()
-			if user:
-				data['user_two_id'] = UserSerializer(user).data
-			profile = Profile.objects.get(user=user)
-			if profile:
-				data['image'] = profile.image
-		return data
+	# def to_representation(self, instance):
+	# 	data = super(FriendSerializer, self).to_representation(instance)
+	# 	if data['user_two_id'] and int(data['status']) == 1:
+	# 		user = User.objects.filter(id=data['user_two_id']).first()
+	# 		if user:
+	# 			data['user_two_id'] = UserSerializer(user).data
+	# 		profile = Profile.objects.get(user=user)
+	# 		if profile:
+	# 			data['image'] = profile.image
+	# 	return data
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = Notification
+		fields = ('id', 'title', 'state', 'created_time')

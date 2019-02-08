@@ -1,0 +1,288 @@
+<div class="container">
+  <div class="row" *ngIf="!isMe&&!isSelected">
+    <div class="jumbotron col-md-6 offset-md-3">
+      <div>
+        <form (ngSubmit)="changeProfile(username)" #userForm="ngForm">
+
+          <div class="row">
+            <div class="col-md-8 offset-md-2">
+              <h2 style="color: #307b52">
+                Thank you for verifying!
+              </h2>
+              <hr>
+            </div>
+
+            <div class="col-md-8 offset-md-2">
+              <label>Please choose a username to proceed</label>
+            </div>
+            <div class="col-md-8 offset-md-2 my-3" [class.has-error]="user_name.invalid && user_name.touched">
+              <input type="text" class="form-control" name="username" required placeholder="User Name"
+                     [(ngModel)]="username" #user_name="ngModel">
+
+              <label  class="control-label" *ngIf="user_name.errors && user_name?.errors.required && user_name.touched">
+                <i class="fa fa-times-circle-o"></i> User name is required.
+              </label>
+            </div>
+            <hr>
+            <div class="col-md-8 offset-md-2 my-4 text-right">
+              <button [disabled]=" userForm.invalid" type="submit"
+                      class="btn btn-primary btn-submit my-2 my-sm-0 ">Select</button>
+
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- image change if profile is logged user's -->
+  <div class="row my-3" *ngIf="isSelected">
+    <div class="col-md-6 my-3">
+      <div class="row">
+        <div *ngIf="isMe" class="col-6">
+          <div ng2FileDrop [ngClass]="{'another-file-over-class': hasBaseDropZoneOver}"
+               (fileOver)="fileOverBase($event)" [uploader]="uploader"
+               class="row justify-content-center my-drop-zone well">
+            <label class="btn btn-default">
+              <img style="width: 150px; height: 150px" class="img-circle" [src]="imageToShow" [title]="username" *ngIf="!isImageLoading; else noImageFound">
+              <ng-template #noImageFound>
+                <img style="width: 150px; height: 150px" class="img-circle" src="../../../assets/images/users/profile.png" [title]="username">
+              </ng-template>
+              <input
+                accept=".png, .jpg"
+                style="display: none" type="file" ng2FileSelect
+                [uploader]="uploader" />
+            </label>
+          </div>
+          <div class="row justify-content-center" *ngIf="uploader.queue.length!=0">
+
+            <button type="button" class="btn btn-success btn-xs" [hidden]="uploader.queue[0].isSuccess"
+                    (click)="uploader.queue[0].upload()" [disabled]="uploader.queue[0].isReady || uploader.queue[0].isUploading || uploader.queue[0].isSuccess">
+              Save
+            </button>
+            <button type="button" class="btn btn-warning btn-xs ml-1" [hidden]="uploader.queue[0].isSuccess"
+                    (click)="removeUploaderItem()" [disabled]="uploader.queue[0].isReady || uploader.queue[0].isUploading || uploader.queue[0].isSuccess">
+              Cancel
+            </button>
+          </div>
+        </div>
+        <div *ngIf="!isMe" class="col-6">
+          <img style="width: 150px; height: 150px" class="img-circle" [src]="imageToShow" [title]="username" *ngIf="!isImageLoading; else noImageFound">
+          <ng-template #noImageFound>
+            <img style="width: 150px; height: 150px" class="img-circle" src="../../../assets/images/users/profile.png" [title]="username">
+          </ng-template>
+        </div>
+        <div class="col-6 ">
+
+          <div >
+            <label>
+              {{GetProfile.first_name}} &nbsp;{{ GetProfile.last_name }}
+            </label>
+          </div>
+          <div >
+            <label>
+              ({{ GetProfile.username }})
+            </label>
+          </div>
+          <div class="row my-1">
+            <div class="col-2">
+              <img style="width: 30px;height: 30px" class="img-circle" src="../../../assets/images/icons8-plus-512.png">
+            </div>
+
+            <div class="col-10 text-left">
+              <span style="font-size: 20px">{{ positive_reviews }}</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-2">
+              <img style="width: 30px;height: 30px" class="img-circle" src="../../../assets/images/icons8-minus-512.png">
+            </div>
+
+            <div class="col-10 text-left">
+              <span style="font-size: 20px">{{ negative_reviews }}</span>
+            </div>
+          </div>
+          <div *ngIf="isLoggedIn&&!isMe&&!isFriend" class="row col-md-5 px-3 my-1 justify-content-center" >
+
+            <button type="button" (click)="requestFriend()" class="btn btn-success btn-xs">
+              Following
+            </button>
+
+          </div>
+           <div *ngIf="isLoggedIn&&!isMe&&isFriend" class="row col-md-5 px-3 my-1 justify-content-center" >
+
+            <button type="button" (click)="requestFriend()" class="btn btn-warning btn-xs">
+              Unfollowing
+            </button>
+
+          </div>
+
+
+        </div>
+
+      </div>
+
+
+    </div>
+  </div>
+  <!-- show friends -->
+  <div class="row" *ngIf="isSelected">
+    <div class="jumbotron col-md-5 p-4">
+
+      <div class="row">
+
+        <label>Friends({{ GetFriends.length }})</label>
+
+      </div>
+
+      <div class="row ">
+
+        <ng-container *ngFor="let friend of GetFriends; let cnt = index" >
+          <div class="col-4 my-1">
+
+            <img *ngIf="isFriendImageLoading[cnt]" style="cursor: pointer;" (click)="changeProfile(friend['friend_name'])" [title]="friend['friend_name']" href="#" class="person-image" src="../../../assets/images/users/profile.png">
+
+            <img *ngIf="!isFriendImageLoading[cnt]" style="cursor: pointer;" (click)="changeProfile(friend['friend_name'])" [title]="friend['friend_name']" class="person-image" [src]="imageFriendToShow[cnt]" >
+
+          </div>
+        </ng-container>
+
+
+      </div>
+    </div>
+
+    <!-- Leave Review -->
+    <div class=" col-md-7 ">
+      <div class="row">
+        <div *ngIf="!isMe&&isLoggedIn" class="jumbotron col-md-5 ml-3 p-1">
+          <div class="row" style="cursor: pointer;" (click)="open(content_positive)">
+
+            <div class="col-2 offset-md-1 ">
+              <ng-template #content_positive let-c="close" let-d="dismiss">
+                <div class="modal-header">
+
+                  <h4 class="modal-title">Leave Positive Review</h4>
+                  <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+
+                  <div class="col-6 form-group">
+                    <label >Event Content: </label>
+                  </div>
+                  <div class="col-12 form-group">
+                    <input class="col-12" type="text" [(ngModel)]="event_content">
+                  </div>
+
+
+                  <div class="col-6 form-group">
+                    <label >Review Content: </label>
+                  </div>
+
+                  <div class="col-12 form-group">
+                    <input class="col-12" type="text" [(ngModel)]="review_content">
+                  </div>
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-success" (click)="saveReview(true)">Save</button>
+                  <button type="button" class="btn btn-inverse" (click)="c('Close click')">Close</button>
+                </div>
+              </ng-template>
+              <img  style="width: 30px;height: 30px" class="img-circle" src="../../../assets/images/icons8-plus-512.png">
+            </div>
+            <div class="col-9">
+              Leave Positive Review
+            </div>
+          </div>
+
+        </div>
+        <div *ngIf="!isMe&&isLoggedIn" style="cursor: pointer;" class="jumbotron col-md-6 ml-3 mr-0 p-1">
+          <div class="row" (click)="open(content_negative)" >
+            <div class="col-2 offset-md-1 ">
+              <ng-template #content_negative let-c="close" let-d="dismiss">
+                <div class="modal-header">
+
+                  <h4 class="modal-title">Leave Negative Review</h4>
+                  <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+
+                  <div class="col-6 form-group">
+                    <label >Event Content: </label>
+                  </div>
+                  <div class="col-12 form-group">
+                    <input class="col-12" type="text" [(ngModel)]="event_content">
+                  </div>
+
+
+                  <div class="col-6 form-group">
+                    <label >Review Content: </label>
+                  </div>
+
+                  <div class="col-12 form-group">
+                    <input class="col-12" type="text" [(ngModel)]="review_content">
+                  </div>
+
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-success" (click)="saveReview(false)">Save</button>
+                  <button type="button" class="btn btn-inverse" (click)="c('Close click')">Close</button>
+                </div>
+              </ng-template>
+              <img style="width: 30px;height: 30px" class="img-circle" src="../../../assets/images/icons8-minus-512.png">
+            </div>
+            <div class="col-8">
+              Leave Negative Review
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-container *ngFor="let review of GetReviews; let c = index">
+        <div class="row jumbotron p-3 m-1">
+
+          <table class="flex-fill">
+            <tr class="row ">
+              <td class="col-2 m-1 p-1 ">
+
+                <img  *ngIf="!isFeedbackImageLoading[c]" [title]="review.sender"  (click)="changeProfile(review.sender)" style="cursor: pointer;width: 70px; height: 70px" class="img-circle" [src]="feedbackImageToShow[c]">
+
+                <img  *ngIf="isFeedbackImageLoading[c]" [title]="review.sender" (click)="changeProfile(review.sender)" style="cursor: pointer;width: 70px; height: 70px" class="img-circle" src="../../../assets/images/users/profile.png" >
+
+
+
+              </td>
+
+              <td class="col-8 m-1 p-1 ">
+                {{ review.event_text }}
+              </td>
+            </tr>
+            <tr class="row ">
+              <td class="col-2 m-1 p-1">
+                <div class="col-3 offset-1 ">
+                  <img *ngIf="review['is_positive']==true"  style="width: 30px;height: 30px" class="img-circle" src="../../../assets/images/icons8-plus-512.png">
+                  <img *ngIf="review['is_positive']==false" style="width: 30px;height: 30px" class="img-circle" src="../../../assets/images/icons8-minus-512.png">
+                </div>
+
+
+              </td>
+
+              <td class="col-8 m-1 p-1 ">
+                {{ review.feedback }}
+              </td>
+            </tr>
+          </table>
+
+
+
+        </div>
+      </ng-container>
+
+    </div>
+  </div>
+
+</div>

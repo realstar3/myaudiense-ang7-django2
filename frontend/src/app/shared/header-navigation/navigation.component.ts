@@ -9,17 +9,20 @@ import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import {UserService} from '../services/user.service';
 import {Router} from "@angular/router";
 import { DomSanitizer } from '@angular/platform-browser';
-import {Observable} from "rxjs";
+import {Observable, Subscription} from "rxjs";
 declare var $: any;
 @Component({
   selector: 'app-navigation',
-  templateUrl: './navigation.component.html'
+  templateUrl: './navigation.component.html',
+  styleUrls: ['./navigation.component.css']
 })
 export class NavigationComponent implements AfterViewInit {
   @Output() toggleSidebar = new EventEmitter<void>();
-  private eventsSubscription: any
-
+  private eventsSubscription: any;
+  private subscription:Subscription;
   @Input() MyEvents: Observable<void>;
+
+
 
   public config: PerfectScrollbarConfigInterface = {};
   imageToShow: any;
@@ -29,16 +32,25 @@ export class NavigationComponent implements AfterViewInit {
               private sanitizer : DomSanitizer,
               private userService: UserService)
   {
-
+    this.subscription = this.userService.changeEmitted$.subscribe(
+      text => {
+        console.log(text);
+        this.dispImage()
+      });
   }
+  ngOnDestroy() {
+        // unsubscribe to ensure no memory leaks
+        this.subscription.unsubscribe();
+    }
+
   ngOnInit(){
-
-
   }
+
   logout() {
     this.userService.logout();
     this.router.navigate(['/starter']);
   }
+
   get isLoggedIn() {
     return this.userService.isLoggedIn();
   }
@@ -54,10 +66,12 @@ export class NavigationComponent implements AfterViewInit {
 
   }
 
-
-
   dispImage() {
     let img_url = this.GetProfile.image;
+    if(img_url==='') {
+      this.isImageLoading = true;
+      return;
+    }
     this.isImageLoading = true;
     this.userService.getImage(img_url)
       .subscribe(
@@ -67,7 +81,7 @@ export class NavigationComponent implements AfterViewInit {
           this.isImageLoading = false;
         },
         error => {
-          this.isImageLoading = false;
+          this.isImageLoading = true;
           console.log(error);
         });
 

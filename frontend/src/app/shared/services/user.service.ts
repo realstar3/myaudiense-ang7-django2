@@ -1,13 +1,13 @@
 /*tslint:disable*/
 import { Injectable } from '@angular/core';
-// import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import {AppSettings} from '../../app.constant';
 import {catchError, tap, map} from 'rxjs/operators';
-import {Http, Response, ResponseContentType} from '@angular/http';
-import {throwError} from 'rxjs';
-import {HttpClient, HttpErrorResponse} from "@angular/common/http";
+import {Subject, throwError} from 'rxjs';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {ErrorObservable} from "rxjs-compat/observable/ErrorObservable";
+import {ToastaService} from "ngx-toasta";
+
 
 
 @Injectable()
@@ -20,7 +20,17 @@ export class UserService {
   private user_reviews:any = {};
   private user_friends:any = {};
 
-  constructor(private http: Http, private  httpClient:HttpClient){
+  private emitChangeSource = new Subject<any>();
+  // Observable string streams
+  changeEmitted$ = this.emitChangeSource.asObservable();
+  // Service message commands
+  emitChange(message: string) {
+    this.emitChangeSource.next(message);
+  }
+
+
+  constructor(private  httpClient:HttpClient,
+              private toastaService:ToastaService){
 
     this.loggedIn = !!localStorage.getItem('auth_token');
     if(this.loggedIn)
@@ -40,11 +50,10 @@ export class UserService {
       email : email,
       password : password
     }
-    return this.http.post(`${this.apiUrl}/api/auth/login/`, userData)
+    return this.httpClient.post(`http://${this.apiUrl}/api/auth/login/`, userData)
       .pipe(
-        tap(data => {
-          // console.log(data['_body'])
-          let res =  JSON.parse(data['_body'])
+        tap(res => {
+
           if (res['token'])
           {
             this.loggedIn = true;
@@ -52,6 +61,7 @@ export class UserService {
             localStorage.setItem('auth_token', res['token']);
             localStorage.setItem('my_profile', JSON.stringify(res['user']));
           }
+          this.emitChangeSource.next("logged")
         }),
         catchError(this.handleError)
       )
@@ -63,10 +73,10 @@ export class UserService {
    * Log the user in
    */
   register(userData:any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/api/auth/signup/`, userData)
+    return this.httpClient.post(`http://${this.apiUrl}/api/auth/signup/`, userData)
       .pipe(
         tap(res => {
-          // console.log(res['._body'])
+
 
         }),
         catchError(this.handleError)
@@ -76,7 +86,7 @@ export class UserService {
   }
   sendMailFor(email:string):Observable<any>{
     let body = {email:email};
-    return this.http.post(`${this.apiUrl}/api/auth/SendMailForPassword/`, body)
+    return this.httpClient.post(`http://${this.apiUrl}/api/auth/SendMailForPassword/`, body)
       .pipe(
         tap(data => {
           this.loggedIn = false;
@@ -113,6 +123,9 @@ export class UserService {
   getFriends(){
     return this.user_friends;
   }
+  getToken(){
+    return localStorage.getItem('auth_token')
+  }
 
   changePasswordFor(email:string, userpass:string, token:string):Observable<any>{
     let body = {
@@ -120,7 +133,7 @@ export class UserService {
       password:userpass,
       token:token,
     };
-    return this.http.post(`${this.apiUrl}/api/auth/ChangePassword/`, body)
+    return this.httpClient.post(`http://${this.apiUrl}/api/auth/ChangePassword/`, body)
       .pipe(
         tap(data =>{
           this.loggedIn = false;
@@ -139,8 +152,9 @@ export class UserService {
    * Log the user out
    */
   public logout() {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('my_profile');
+    // localStorage.removeItem('auth_token');
+    // localStorage.removeItem('my_profile');
+    localStorage.clear()
     this.my_profile = {};
     this.loggedIn = false;
 
@@ -152,16 +166,16 @@ export class UserService {
     let tkData = {
       token : tk
     };
-    return this.http.post(AppSettings.API_ENDPOINT+"/api/auth/Activate/", tkData)
+    return this.httpClient.post("http://"+AppSettings.API_ENDPOINT+"/api/auth/Activate/", tkData)
       .pipe(
-        tap(data => {
-          let res = JSON.parse(data['_body'])
-          if (res.token)
+        tap(res => {
+
+          if (res['token']!=undefined)
           {
             this.loggedIn = true;
-            this.my_profile = res.user;
-            localStorage.setItem('auth_token', res.token);
-            localStorage.setItem('my_profile', JSON.stringify(res.user));
+            this.my_profile = res['user'];
+            localStorage.setItem('auth_token', res['token']);
+            localStorage.setItem('my_profile', JSON.stringify(res['user']));
           }
         }),
         catchError(this.handleError)
@@ -170,16 +184,20 @@ export class UserService {
   }
   userProfile(username):Observable<any>{
     let send_data = "username=" + username;
-    return this.http.get(AppSettings.API_ENDPOINT+'/api/auth/Profile?' + send_data)
+    return this.httpClient.get("http://" + AppSettings.API_ENDPOINT+'/api/auth/Profile?' + send_data)
       .pipe(
-        tap(data=>{
-          let res = JSON.parse(data['_body'])
+        tap(res=>{
+
           if(res['profile']!==undefined){
-            this.user_profile = JSON.parse(res['profile']);
-            localStorage.setItem('user_profile', res['profile']);
-          }else {
-            this.user_profile = [];
-            localStorage.setItem('user_profile', '');
+            let profile = JSON.parse(res['profile']);
+            if(profile.username===this.my_profile.username){
+              this.my_profile = profile
+              localStorage.setItem('my_profile', res['profile']);
+            }
+            else {
+              this.user_profile = profile
+              localStorage.setItem('user_profile', res['profile']);
+            }
           }
           if(res['reviews']!==undefined){
             this.user_reviews = JSON.parse(res['reviews']);
@@ -203,19 +221,50 @@ export class UserService {
   }
 
   getImage(imageUrl: string): Observable<any> {
-        return this.httpClient
-            .get(imageUrl, { responseType: 'blob' })
-          .pipe(
-            tap( res=>{
-              let data = res['_body']
+    return this.httpClient
+      .get(imageUrl, { responseType: 'blob' })
+      .pipe(
+        tap( res=>{
 
+        }),
 
-            }),
-            // map(res => res['_body']),
-            catchError(this.handleError)
-            )
+        catchError(this.handleError)
+      )
 
-    }
+  }
+  leaveReview(send_data:any):Observable<any>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        'Authorization': this.getToken()
+      })
+    };
+    return this.httpClient
+      .post(`http://${this.apiUrl}/api/auth/SaveReview/`, send_data, httpOptions)
+      .pipe(
+        tap( res=> {
+
+        }),
+        catchError(this.handleError)
+      );
+  }
+
+  RequestFriend(friend_user_name):Observable<any>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        'Authorization': this.getToken()
+      })
+    };
+    return this.httpClient
+    .post(`http://${this.apiUrl}/api/auth/RequestFriend/`, {friend_user_name}, httpOptions)
+      .pipe(
+        tap( res=> {
+
+        }),
+        catchError(this.handleError)
+      );
+  }
 
   /**
    * Handle any errors from the API
@@ -225,10 +274,18 @@ export class UserService {
     try {
       if (err instanceof Response) {
         let body   = err.json() || '';
-        let error  = body.error || JSON.stringify(body);
-        errMessage = `${err.statusText || ''} : ${error}`;
+        // let error  = body.error || JSON.stringify(body);
+        // errMessage = `${err.statusText || ''} : ${error}`;
       } else {
+
         errMessage = err.message ? err.message : err.toString();
+        if(err['error']!=undefined){
+          errMessage = err['statusText']
+          let error = err['error']
+          if(error['error'][0]!=undefined){
+            errMessage = error['error'][0]
+          }
+        }
       }
 
     }
@@ -248,10 +305,16 @@ export class UserService {
   // 		// The response body may contain clues as to what went wrong,
   // 		console.error(
   // 			`Backend returned code ${error.status}, ` +
-  // 			`body was: ${error.error}`);
+  // 			`body was: ${error.error.detail}`);
+  // 		if(error['status']!=undefined && error['status']==403)
+  //     {
+  //       this.toastaService.error('Token not valid or not active user');
+  //       this.logout();
+  //
+  //     }
   // 	}
   // 	// return an ErrorObservable with a user-facing error message
-  // 	return new ErrorObservable('Something bad happened; please try again later.');
+  // 	return new ErrorObservable();
   // };
 
 

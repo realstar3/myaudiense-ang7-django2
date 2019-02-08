@@ -21,9 +21,19 @@ import { AppComponent } from './app.component';
 import { SpinnerComponent } from './shared/spinner.component';
 import {UserService} from './shared/services/user.service';
 import {ToastaModule} from 'ngx-toasta';
-import {HttpModule} from '@angular/http';
-import {ReCaptchaModule} from 'angular2-recaptcha';
-
+import {
+  MatButtonModule,
+  MatDialogModule,
+  MatIconModule,
+  MatInputModule,
+  MatListModule,
+  MatMenuModule,
+  MatSidenavModule,
+  MatToolbarModule
+} from "@angular/material";
+import {ChatService} from "./shared/services/chat.service";
+import {WebSocketService} from "./shared/services/websocket.service";
+import {AuthGuardService} from "./shared/services/auth-guard.service";
 
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
@@ -40,17 +50,25 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     NavigationComponent,
     BreadcrumbComponent,
     SidebarComponent,
+
   ],
   imports: [
     CommonModule,
-    HttpModule,
+    MatIconModule,
+    MatListModule,
+    MatMenuModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    MatInputModule,
+    MatDialogModule,
+    MatButtonModule,
     HttpClientModule,
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    NgbModule.forRoot(),
+    NgbModule,
     RouterModule.forRoot(Approutes),
     PerfectScrollbarModule,
     ToastaModule.forRoot(),
@@ -61,7 +79,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
       provide: PERFECT_SCROLLBAR_CONFIG,
       useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
     },
-    UserService,
+    UserService,ChatService, WebSocketService, AuthGuardService
   ],
   bootstrap: [AppComponent]
 })

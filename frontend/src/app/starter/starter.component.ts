@@ -10,7 +10,7 @@ import {ExistSpace} from "../_helpers/exist-space.validator";
   templateUrl: './starter.component.html'
 })
 export class StarterComponent implements AfterViewInit {
-  user = {first_name: '', last_name: '', username: '', password: '', }
+  // user = {first_name: '', last_name: '', username: '', password: '', }
   isLoading = false;
   registerForm: FormGroup;
   submitted = false;

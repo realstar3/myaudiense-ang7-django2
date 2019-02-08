@@ -10,14 +10,31 @@
 <!-- User profile and search -->
 <!-- ============================================================== -->
 <ul *ngIf="isLoggedIn" class="navbar-nav my-lg-0 float-right">
+  <!-- notifications -->
+  <li class="nav-item dropdown mt-2" ngbDropdown placement="bottom-right">
+    <a ngbDropdownToggle class="nav-link "
+       href="javascript:void(0)" id="navbarDropdownMenuLink"
+       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <i class="material-icons">notifications</i>
+      <span class="notification">5</span>
+
+    </a>
+    <div class="dropdown-menu animated dropdown-menu-left" ngbDropdownMenu>
+      <a class="dropdown-item" href="#">Mike John responded to your email</a>
+      <a class="dropdown-item" href="#">You have 5 new tasks</a>
+      <a class="dropdown-item" href="#">You're now friend with Andrew</a>
+      <a class="dropdown-item" href="#">Another Notification</a>
+      <a class="dropdown-item" href="#">Another One</a>
+    </div>
+  </li>
 
   <!-- ============================================================== -->
   <!-- Profile -->
-  <!-- ============================================================== -->
+  <!-- ===========================================notification=================== -->
   <li class="nav-item dropdown" ngbDropdown placement="bottom-right">
     <a ngbDropdownToggle class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="javascript:void(0)"
-       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span
-      style="color: gold;font-weight: bold">{{ GetProfile.username }}&nbsp;</span>
+       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <span style="color: gold;font-weight: bold">{{ GetProfile.username }}&nbsp;</span>
       <img class="profile-pic" [src]="imageToShow" alt="user" *ngIf="!isImageLoading; else noCircleImageFound">
       <ng-template #noCircleImageFound>
         <img class="profile-pic" src="../../../assets/images/users/profile.png" alt="user">

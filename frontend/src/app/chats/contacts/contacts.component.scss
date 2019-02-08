@@ -1,0 +1,74 @@
+$height__chat-header: 150px;
+$height__chat-toolbar: 64px;
+$height__chat-container: calc(100% - #{$height__chat-header - $height__chat-toolbar});
+.avatar {
+  width: 41px;
+    min-width: 40px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 50%;
+    text-align: center;
+}
+
+mat-toolbar {
+  border-bottom: 1px solid #EEE;
+  .current-contact {
+    .name {
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .status {
+      font-size: 14px;
+      color: #888;
+    }
+  }
+}
+
+.chat-contacts-container {
+  height: calc(100% - #{$height__chat-toolbar});
+
+  .chat-contacts {
+    padding-top: 0;
+
+    .chat-contact {
+      position: relative;
+      cursor: pointer;
+      transition: background .1s linear;
+
+      &:hover {
+        background: #EEE;
+      }
+
+      .name {  }
+
+      .last-message {
+        color: #888;
+      }
+    }
+  }
+}
+
+
+.sidenav-container, .sidenav-scrollbar-container {
+  height: 100%;
+}
+
+.unread_mark {
+    position: absolute;
+    //top: 0px;
+    border: 1px solid #FFF;
+    /*right: 10px;*/
+    //left: 21px;
+    font-size: 9px;
+    background: #22af8d;
+    color: #FFFFFF;
+    min-width: 20px;
+    padding: 0px 5px;
+    height: 20px;
+    border-radius: 10px;
+    text-align: center;
+    line-height: 19px;
+    vertical-align: middle;
+    display: block; }
+

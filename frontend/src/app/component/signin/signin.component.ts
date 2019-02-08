@@ -1,5 +1,5 @@
 /*tslint:disable*/
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import { Router} from '@angular/router';
 import {UserService} from '../../shared/services/user.service';
 import {ToastaService} from 'ngx-toasta';
@@ -51,6 +51,7 @@ export class UserSignInComponent implements OnInit {
           this.isLoading = false;
           this.toastaService.success('Success');
           this.router.navigate(['/starter']);
+          this.userService.emitChange('Data from child');
         },
         errMessage => {
           this.isLoading = false;

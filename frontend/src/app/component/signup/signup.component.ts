@@ -57,6 +57,7 @@ export class SignupComponent implements OnInit {
 
     const send_data = {
       email: this.registerForm.value['email'],
+      username: this.registerForm.value['userName'],
       first_name: this.registerForm.value['firstName'],
       last_name: this.registerForm.value['lastName'],
       password: this.registerForm.value['password']

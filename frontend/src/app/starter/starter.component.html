@@ -1,5 +1,5 @@
-<div class="row justify-content-center align-items-center my-3" >
-  <div *ngIf="!active_status" class="col-xl-6 " style="margin: 0 0 50px 0">
+<div class="row justify-content-center  my-3" >
+  <div *ngIf="!active_status" class="jumbotron col-xl-5 mx-xl-1" >
     <table >
       <tr >
         <td colspan="2" style="padding-bottom: 50px">
@@ -70,7 +70,7 @@
             <input type="text" formControlName="userName" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.userName.errors }" />
             <div *ngIf="submitted && f.userName.errors" class="invalid-feedback">
               <div *ngIf="f.userName.errors.required">User name is required</div>
-              <div *ngIf="f.userName.errors.existSpace">User Name can not be contain space.</div>
+              <div *ngIf="f.userName.errors.existSpace">User Name can not be contain whitespace.</div>
             </div>
           </div>
         <div class="form-group">

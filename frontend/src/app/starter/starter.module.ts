@@ -4,13 +4,17 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 
 import { StarterComponent } from './starter.component';
-import {UserSignInComponent} from '../layouts/signin/signin.component';
-import {SignupComponent} from '../layouts/signup/signup.component';
-import {ActiveComponent} from '../layouts/signup/active.component';
-import {ForgotPasswordComponent} from '../layouts/signin/send-passwordlink.component';
-import {ChangePasswordComponent} from '../layouts/signin/change-password.component';
+import {UserSignInComponent} from '../component/signin/signin.component';
+import {SignupComponent} from '../component/signup/signup.component';
+import {ActiveComponent} from '../component/signup/active.component';
+import {ForgotPasswordComponent} from '../component/signin/send-passwordlink.component';
+import {ChangePasswordComponent} from '../component/signin/change-password.component';
 import {ReCaptchaModule} from 'angular2-recaptcha';
-import {ProfileComponent} from "../layouts/profile/profile.component";
+import {ProfileComponent} from "../component/profile/profile.component";
+import {FileUploadModule} from "ng2-file-upload";
+import {FlexLayoutModule} from "@angular/flex-layout";
+import {ToastaModule} from "ngx-toasta";
+
 
 
 const routes: Routes = [
@@ -44,11 +48,12 @@ const routes: Routes = [
   { path: 'change', component: ChangePasswordComponent},
   { path: 'profile', component: ProfileComponent},
 
+
 ];
 
 @NgModule({
-  imports: [FormsModule, CommonModule, ReactiveFormsModule,
-    RouterModule.forChild(routes), ReCaptchaModule],
+  imports: [FormsModule, CommonModule, ReactiveFormsModule,FileUploadModule,FlexLayoutModule,
+    RouterModule.forChild(routes), ReCaptchaModule, ToastaModule.forRoot()],
   declarations: [StarterComponent, UserSignInComponent,
     SignupComponent, ActiveComponent,
     ForgotPasswordComponent,

@@ -5,8 +5,8 @@ import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import {UserService} from '../../shared/services/user.service';
 import {ToastaService, ToastaConfig, ToastOptions, ToastData} from 'ngx-toasta';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {Subject} from "rxjs";
-
+import {Subject, Subscription} from "rxjs";
+import { ToolbarHelpers } from './toolbar.helpers';
 
 @Component({
   selector: 'app-full-layout',
@@ -23,11 +23,12 @@ export class FullComponent implements OnInit {
   isLoading = false;
   registerForm: FormGroup;
   submitted = false;
-  // credentials = { username: '', password: '' };
+  toolbarHelpers = ToolbarHelpers;
+
   private eventsSubject: Subject<void> = new Subject<void>();
   public innerWidth: any;
-
   public config: PerfectScrollbarConfigInterface = {};
+
 
   constructor(
     public router: Router,
@@ -36,12 +37,14 @@ export class FullComponent implements OnInit {
     private toastaConfig: ToastaConfig,
     private formBuilder: FormBuilder
   ) {
+
+
     this.toastaConfig.theme = 'default';
-     this.registerForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-    },
-      );
+    this.registerForm = this.formBuilder.group({
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required, Validators.minLength(6)]],
+      },
+    );
   }
 
 
@@ -49,7 +52,7 @@ export class FullComponent implements OnInit {
 
   ngOnInit() {
     if (this.router.url === '/') {
-      this.router.navigate(['/dashboard/dashboard1']);
+      this.router.navigate(['/starter']);
     }
     this.handleLayout();
   }
@@ -106,6 +109,7 @@ export class FullComponent implements OnInit {
           this.isLoading = false;
           this.toastaService.success('Success');
           this.eventsSubject.next();
+
 
         },
         errMessage => {

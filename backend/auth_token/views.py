@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-from rest_framework import status , generics , mixins
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from rest_framework import status, generics , mixins, permissions
 from rest_framework.renderers import JSONRenderer
-
+import tinys3, requests
 from .serializers import *
 
 from django.conf import settings
+from django.db.models import Q
 from .serializers import UserSerializer, UserLogoutSerializer, FriendSerializer
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
 from . import key_config
-from .models import AuthToken
+from .models import *
 from rest_framework.response import Response
 from django.utils import timezone
 from django.core.mail import EmailMultiAlternatives
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
+from django.contrib.auth import login, logout
 
 
 class UserLogin(generics.GenericAPIView):
@@ -35,6 +35,7 @@ class UserLogin(generics.GenericAPIView):
 			if user and pwd_valid:
 
 				auth_token = AuthToken.objects.create(user=user)
+				login(request, user)
 				profile = Profile.objects.get(user=user)
 				if not profile:
 					profile = Profile(user=user)
@@ -43,6 +44,8 @@ class UserLogin(generics.GenericAPIView):
 				if auth_token:
 					response['token'] = auth_token.token
 					response['user'] = ProfileSerializer(profile).data
+					response['session_key'] = request.stream.session.session_key
+					response['username'] = request.stream.user.username
 					return Response(response, status=status.HTTP_200_OK)
 
 			else:
@@ -152,6 +155,7 @@ class SendMailForResetPassword(generics.GenericAPIView):
 
 class UserProfile(generics.GenericAPIView):
 	# serializer_class = ProfileSerializer
+	# permission_classes = (permissions.IsAuthenticated,)
 
 	def get(self, request, *args, **kw):
 		username = self.request.query_params.get(key_config.KEY_USERNAME)
@@ -171,9 +175,24 @@ class UserProfile(generics.GenericAPIView):
 				reviews = ReviewSerializer(reviews_filter, many=True).data
 				response['reviews'] = JSONRenderer().render(reviews)
 
-			friend_filter = Friend.objects.filter(user_one_id=user.id)
+			friend_filter = Friend.objects.filter(Q(user_one_id=user.id) | Q(user_two_id=user.id), status=1)
+			relation_items = FriendSerializer(friend_filter, many=True).data
 			if friend_filter:
-				friends = FriendSerializer(friend_filter, many=True).data
+				friends = []
+				for friend_temp in relation_items:
+					friend = {}
+
+					if friend_temp['user_one_id'] == user.id:
+						friend['username'] = user.username
+						friend['friend_name'] = User.objects.get(id=friend_temp['user_two_id']).username
+						friend['friend_image'] = Profile.objects.get(user_id=friend_temp['user_two_id']).image
+
+					if friend_temp['user_two_id'] == user.id:
+						friend['username'] = user.username
+						friend['friend_name'] = User.objects.get(id=friend_temp['user_one_id']).username
+						friend['friend_image'] = Profile.objects.get(user_id=friend_temp['user_one_id']).image
+					friends.append(friend)
+
 				response['friends'] = JSONRenderer().render(friends)
 			return Response(response, status=status.HTTP_200_OK)
 		except Exception as e:
@@ -284,3 +303,95 @@ def send_email(token=None, username=None, email=None):
 	except Exception as e:
 		print('Exception: {}'.format(e))
 		return False
+
+
+class FileUploadView(generics.GenericAPIView):
+	# parser_classes = (FileUploadParser,)
+	# serializer_class = UploadFileForm
+	permission_classes = (permissions.IsAuthenticated,)
+
+	def post(self, request, filename='deafult_file', format=None):
+		from datetime import datetime
+		timestamp = str(datetime.now().strftime('%Y_%m_%d_%H_%M_%S'))
+		file_obj = request.FILES['file']
+		user_name = request.POST.get("username","")
+		source_path = 'uploaded_files/'
+		s3_key = ''
+		user = request.user
+		if not user.is_active:
+			return Response({'error': 'You are not activated.'}, status=status.HTTP_401_UNAUTHORIZED)
+		source_path = source_path + user.username + "/"
+		bucket_name = settings.BUCKET_NAME
+		if bucket_name == "":
+			pass
+
+		s3_key = source_path + filename
+
+		conn = tinys3.Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+		# Uploading a single file
+		try:
+			s = conn.upload(s3_key, file_obj, bucket_name)
+		# conn.update_metadata(s3_file_path, {'x-amz-meta-redshift-status': 'False'}, bucket_name)
+		except requests.HTTPError as e:
+			# if httpe.response.status_code == 404:
+			return Response({'error': str(e)}, status=status.HTTP_303_SEE_OTHER)
+		profile = Profile.objects.get(user=user)
+		profile.image = s.url
+		profile.save()
+
+		return Response({'deatils': 'Uploaded Successfully'}, status=status.HTTP_200_OK)
+
+
+class SaveReview(generics.GenericAPIView):
+	def post(self, request, *args, **kw):
+		if not request.user.is_active:
+			return Response({'error': 'You are not activated.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+		event_content = self.request.data['event_content']
+		review_content = self.request.data['review_content']
+		is_positive = self.request.data['isPositive']
+		receiver = self.request.data['receiver']
+		review = Review.objects.create(user=receiver, sender=request.user.username,
+									   event_text=event_content, feedback=review_content,
+									   is_positive=is_positive)
+		return Response({'deatils': 'Review saved Successfully'}, status=status.HTTP_200_OK)
+
+
+class RequestFriend(generics.GenericAPIView):
+	def post(self, request, *args, **kw):
+		if not request.user.is_active:
+			return Response({'error': 'You are not activated.'}, status=status.HTTP_401_UNAUTHORIZED)
+		friend_user_name = self.request.data['friend_user_name']
+		friend_user = User.objects.get(username=friend_user_name)
+		if not friend_user:
+			return Response({'error': 'Friend User does not exist.'}, status=status.HTTP_401_UNAUTHORIZED)
+		friend = Friend(user_one_id=request.user, user_two_id=friend_user,
+						status=1, action_user_id=request.user.id)
+		friend.save()
+		notification = Notification(title=request.user.username+" sent you friend request.",
+					 user=friend_user,
+					 state=0)
+		notification.save()
+
+
+		# send mail
+		# send notification
+
+		return Response({'details': 'Friend request sent successfully.'})
+
+
+class ReceiveFriend(generics.GenericAPIView):
+	def post(self, request, *args, **kw):
+		if not request.user.is_active:
+			return Response({'error': 'You are not activated.'}, status=status.HTTP_401_UNAUTHORIZED)
+		relationship_id = self.request.data['relationship_id']
+		action = self.request.data['action']
+		action_status = 0
+		if action in "Accepted": action_status = 1
+		if action in "Declined": action_status = 2
+		if action in "Blocked": action_status = 3
+		relationship = Friend.objects.get(id=relationship_id)
+		relationship.status = action_status
+		relationship.action_user_id = self.request.user.id
+		relationship.save()
+		return Response({'details': 'Your action is verified.'})

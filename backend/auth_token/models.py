@@ -4,9 +4,17 @@ import uuid
 from django.utils import timezone
 from datetime import timedelta
 from django.db import models
-from django_project.models import TimestampModel
-from django.contrib.auth.models import User, Group
 
+from django.contrib.auth.models import User
+from django_project import helper
+
+
+class TimestampModel(models.Model):
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
 
 
 def get_expiry():
@@ -76,14 +84,27 @@ class Review(TimestampModel):
 # 3	Blocked
 
 class Friend(TimestampModel):
-	user_one_id = models.IntegerField()
-	user_two_id = models.IntegerField()
+	# user_one_id = models.IntegerField()
+	# user_two_id = models.IntegerField()
+	user_one_id = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='user_one_id',
+					  related_name='from_user', db_index=True)
+	user_two_id = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='user_two_id',
+						   related_name='to_user', db_index=True)
 	status = models.SmallIntegerField()
 	action_user_id = models.IntegerField()
 
 	class Meta:
 		unique_together = ("user_one_id", "user_two_id")
+		ordering = ('-created_date',)
 
+
+class Notification(TimestampModel):
+	user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+	title = models.TextField()
+	state = models.SmallIntegerField()
+
+	class Meta:
+		ordering = ('-created_date',)
 
 
 

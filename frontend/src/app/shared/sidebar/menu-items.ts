@@ -59,7 +59,7 @@ export const ROUTES: RouteInfo[] = [
   },
 
   {
-    path: '/component/alert',
+    path: '/component/buttons',
     title: 'Marketplace',
     icon: 'mdi mdi-message-bulleted',
     class: '',
@@ -70,7 +70,7 @@ export const ROUTES: RouteInfo[] = [
     logged: true,
   },
   {
-    path: '/component/carousel',
+    path: '/chat',
     title: 'Invite',
     icon: 'mdi mdi-view-carousel',
     class: '',
@@ -89,7 +89,8 @@ export const ROUTES: RouteInfo[] = [
   //   label: '',
   //   labelClass: '',
   //   extralink: false,
-  //   submenu: []
+  //   submenu: [],
+  //   logged: true,
   // },
   // {
   //   path: '/component/pagination',

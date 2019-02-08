@@ -57,14 +57,15 @@
             <a class="nav-link" routerLink="/profile">Profile</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/component/alert">Marketplace</a>
+            <a class="nav-link" routerLink="/component/buttons">Marketplace</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/component/carousel">Invite</a>
+            <a class="nav-link" routerLink="/chat">Invite</a>
           </li>
         </ul>
 
-        <form *ngIf="!isMobile&&!isLoggedIn" [formGroup]="registerForm" (ngSubmit)="login()"  class="form-inline pt-4  mb-2">
+        <form *ngIf="!isMobile&&!isLoggedIn" [formGroup]="registerForm" (ngSubmit)="login()"
+              class="form-inline pt-3  mb-1">
           <table>
             <tr>
               <td>
@@ -91,7 +92,7 @@
                 <!--</div>-->
               </td>
               <td>
-                <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Log In</button>
+                <button class="btn btn-outline-info my-sm-0" type="submit">Log In</button>
               </td>
             </tr>
             <tr>
@@ -103,6 +104,7 @@
             </tr>
           </table>
         </form>
+
 
         <app-navigation  [ngClass]="isMobile?'w-100':''" [MyEvents]="eventsSubject.asObservable()" (toggleSidebar)="toggleSidebar()"></app-navigation>
         <ngx-toasta></ngx-toasta>
