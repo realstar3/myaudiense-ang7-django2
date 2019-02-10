@@ -7,14 +7,15 @@
           </button>
 
      
-        <img class="avatar pointer" *ngIf="activeChat" [src]="client_image">
+        <img class="avatar pointer" *ngIf="activeChat" [src]="room.client_image">
 
         <div class="activeChat">
 
-            <h3 class="mat-body-2" *ngIf="activeChat">{{ client_name }}</h3>
+            <h3 class="mat-body-2" *ngIf="activeChat">{{ room.client_name }}</h3>
           <!--
             <p class="mat-body-1" style="margin: 0" *ngIf="activeChat">Online</p>
           -->
+          <p class="mat-body-1" style="margin: 0" *ngIf="activeChat">{{ room.title }}</p>
         </div>
    
 
@@ -30,12 +31,14 @@
   </mat-toolbar>
 
   <div class="chat-content" fxLayout="column" fxLayoutAlign="end stretch">
-    <perfect-scrollbar>
+
+    <perfect-scrollbar class="scroll-container" fxFlex="auto" [config]="config" [scrollIndicators]="true" (psXReachEnd)="onScrollEvent($event)" (psYReachEnd)="onScrollEvent($event)"
+                       (psXReachStart)="onScrollEvent($event)" (psYReachStart)="onScrollEvent($event)">
       <div class="messages-container" *ngIf="activeChat">
-        <div class="chat-message" *ngFor="let message of activeChat.messages" [ngSwitch]="message.sender==client_name?'partner':'me'" fxLayout="column"
+        <div class="chat-message" *ngFor="let message of activeChat.messages" [ngSwitch]="message.sender==room.client_name?'partner':'me'" fxLayout="column"
              fxLayoutAlign="end start">
           <div class="partner" *ngSwitchCase="'partner'" fxFlexAlign="start" fxLayout="row" fxLayoutAlign="start start">
-            <img class="avatar" [src]="client_image">
+            <img class="avatar" [src]="room.client_image">
             <span class="message mat-elevation-z1">{{ message.text }}</span>
           </div>
           <div class="me" *ngSwitchCase="'me'" fxFlexAlign="end" fxLayout="row" fxLayoutAlign="end start">

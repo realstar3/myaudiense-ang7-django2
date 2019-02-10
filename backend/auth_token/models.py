@@ -18,7 +18,7 @@ class TimestampModel(models.Model):
 
 
 def get_expiry():
-	return timezone.now() + timedelta(days=1)
+	return timezone.now() + timedelta(days=3)
 
 
 class AuthTokenManager(models.Manager):

@@ -20,7 +20,7 @@ import { Approutes } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SpinnerComponent } from './shared/spinner.component';
 import {UserService} from './shared/services/user.service';
-import {ToastaModule} from 'ngx-toasta';
+
 import {
   MatButtonModule,
   MatDialogModule,
@@ -34,7 +34,7 @@ import {
 import {ChatService} from "./shared/services/chat.service";
 import {WebSocketService} from "./shared/services/websocket.service";
 import {AuthGuardService} from "./shared/services/auth-guard.service";
-
+import {ToastrModule} from "ngx-toastr";
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
@@ -62,7 +62,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     MatInputModule,
     MatDialogModule,
     MatButtonModule,
-    HttpClientModule,
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
@@ -71,7 +70,11 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     NgbModule,
     RouterModule.forRoot(Approutes),
     PerfectScrollbarModule,
-    ToastaModule.forRoot(),
+
+    ToastrModule.forRoot({
+      timeOut: 1000,
+      positionClass: 'toast-bottom-right'
+    })
 
   ],
   providers: [

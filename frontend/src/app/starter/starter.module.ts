@@ -13,7 +13,7 @@ import {ReCaptchaModule} from 'angular2-recaptcha';
 import {ProfileComponent} from "../component/profile/profile.component";
 import {FileUploadModule} from "ng2-file-upload";
 import {FlexLayoutModule} from "@angular/flex-layout";
-import {ToastaModule} from "ngx-toasta";
+
 
 
 
@@ -52,10 +52,20 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [FormsModule, CommonModule, ReactiveFormsModule,FileUploadModule,FlexLayoutModule,
-    RouterModule.forChild(routes), ReCaptchaModule, ToastaModule.forRoot()],
-  declarations: [StarterComponent, UserSignInComponent,
-    SignupComponent, ActiveComponent,
+  imports: [
+    FormsModule,
+    CommonModule,
+    ReactiveFormsModule,
+    FileUploadModule,
+    FlexLayoutModule,
+    RouterModule.forChild(routes),
+    ReCaptchaModule
+  ],
+  declarations: [
+    StarterComponent,
+    UserSignInComponent,
+    SignupComponent,
+    ActiveComponent,
     ForgotPasswordComponent,
     ChangePasswordComponent,
     ProfileComponent

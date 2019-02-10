@@ -29,6 +29,12 @@ class UserLogin(generics.GenericAPIView):
 		response = {}
 		try:
 			user = User.objects.get(email=email)
+			if not user :
+				response['error'] = ['No exist this username']
+				return Response(response, status=status.HTTP_401_UNAUTHORIZED)
+			if not user.is_active:
+				response['error'] = ['Please activate.']
+				return Response(response, status=status.HTTP_401_UNAUTHORIZED)
 			pwd_valid = check_password(password, user.password)
 			# user = authenticate(username=email, password=password)
 
@@ -365,9 +371,16 @@ class RequestFriend(generics.GenericAPIView):
 		friend_user = User.objects.get(username=friend_user_name)
 		if not friend_user:
 			return Response({'error': 'Friend User does not exist.'}, status=status.HTTP_401_UNAUTHORIZED)
-		friend = Friend(user_one_id=request.user, user_two_id=friend_user,
+		friend = Friend.objects.filter(Q(user_one_id=request.user, user_two_id=friend_user) | Q(user_one_id=friend_user,
+																								user_two_id=request.user)).first()
+		if not friend:
+			friend = Friend(user_one_id=request.user, user_two_id=friend_user,
 						status=1, action_user_id=request.user.id)
-		friend.save()
+			friend.save()
+		else:
+			friend.status = 1
+			friend.action_user_id = request.user.id
+			friend.save()
 		notification = Notification(title=request.user.username+" sent you friend request.",
 					 user=friend_user,
 					 state=0)
@@ -379,6 +392,28 @@ class RequestFriend(generics.GenericAPIView):
 
 		return Response({'details': 'Friend request sent successfully.'})
 
+
+class RemoveFriend(generics.GenericAPIView):
+	def post(self, request, *args, **kw):
+		if not request.user.is_active:
+			return Response({'error': 'You are not activated.'}, status=status.HTTP_401_UNAUTHORIZED)
+		friend_user_name = self.request.data['friend_user_name']
+		friend_user = User.objects.get(username=friend_user_name)
+		if not friend_user:
+			return Response({'error': 'Friend User does not exist.'}, status=status.HTTP_401_UNAUTHORIZED)
+		friend = Friend.objects.filter(Q(user_one_id=request.user, user_two_id=friend_user) | Q(user_one_id=friend_user, user_two_id=request.user)).first()
+		if friend:
+			friend.delete()
+		notification = Notification(title=request.user.username+" sent you unfriend request.",
+					 user=friend_user,
+					 state=0)
+		notification.save()
+
+
+		# send mail
+		# send notification
+
+		return Response({'details': 'Friend request sent successfully.'})
 
 class ReceiveFriend(generics.GenericAPIView):
 	def post(self, request, *args, **kw):

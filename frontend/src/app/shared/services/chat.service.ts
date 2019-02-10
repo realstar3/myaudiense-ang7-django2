@@ -5,9 +5,8 @@ import {WebSocketService} from "./websocket.service";
 import {AppSettings} from "../../app.constant";
 import {catchError, map} from "rxjs/operators";
 import {send} from "q";
-import {ErrorObservable} from "rxjs-compat/observable/ErrorObservable";
 import {Router} from "@angular/router";
-import {ToastaService} from "ngx-toasta";
+
 import {UserService} from "./user.service";
 
 @Injectable({
@@ -17,7 +16,6 @@ export class ChatService {
 
   constructor(private wsService: WebSocketService,
               private httpClient: HttpClient,
-              private userService:UserService,
               public router: Router) {}
   public messages: Subject<any>;
   private apiUrl: string = AppSettings.API_ENDPOINT;
@@ -60,7 +58,7 @@ export class ChatService {
         'Authorization': this.getToken()
       })
     };
-    const body = {title:send_data['room_title'], client_name:send_data['client_name']}
+    const body = {title:send_data['room_title'], client_name:send_data['client_name']};
     return this.httpClient.post(`http://${this.apiUrl}/messaging/add-chatroom`, body,httpOptions)
       .pipe(
       catchError(this.handleError)
@@ -68,37 +66,6 @@ export class ChatService {
       )
   }
 
-
-
-
-  // getChatsList() {
-  //   return this.chatsRef.snapshotChanges().pipe(map(arr => {
-  //     return arr.map(snap => Object.assign(snap.payload.val(), {$key: snap.key}));
-  //   }));
-  // }
-  //
-  // getChat(key: string): Observable<any> {
-  //   const path = `${this.basePath}/${key}`;
-  //   this.chat = this.db.object(path).valueChanges();
-  //   return this.chat;
-  // }
-  //
-  // createChat(chat) {
-  //   this.chatsRef.push(chat);
-  // }
-  //
-  // updateChatMessage(key: string, value: any) {
-  //   console.log('key',key,'value',value);
-  //   this.chatsRef.update(key, {messages: value.messages});
-  // }
-  //
-  // deleteChat(key: string) {
-  //   this.chatsRef.remove(key);
-  // }
-  //
-  // deleteAll() {
-  //   this.chatsRef.remove();
-  // }
   private handleError(err) {
     let errMessage: string;
     try {

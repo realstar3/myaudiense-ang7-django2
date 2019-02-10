@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ToastaService} from 'ngx-toasta';
+// import {ToastaService} from 'ngx-toasta';
 import {UserService} from '../../shared/services/user.service';
 
 /*tslint:disable*/
@@ -19,7 +19,7 @@ export class ChangePasswordComponent implements OnInit {
 	constructor(private userService: UserService,
 				private router: Router,
 				private route: ActivatedRoute,
-				private toastrService: ToastaService) {
+				) {
 	}
 
 	ngOnInit() {
@@ -40,19 +40,19 @@ export class ChangePasswordComponent implements OnInit {
 	}
 	sendPassword() {
 		if (this.firs_password !== this.second_password) {
-			this.toastrService.error('Password is not equal.');
+			// this.toastrService.error('Password is not equal.');
 			return;
 		}
 		this.isLoading = true;
 		this.userService.changePasswordFor(this.email, this.firs_password, this.token).subscribe(
 			data => {
 				this.isLoading = false;
-				this.toastrService.success('Your password is changed successfully.');
+				// this.toastrService.success('Your password is changed successfully.');
 				this.router.navigate(['/starter']);
 			},
 			err => {
 				this.isLoading = false;
-				this.toastrService.error(err);
+				// this.toastrService.error(err);
 			}
 		);
 	}

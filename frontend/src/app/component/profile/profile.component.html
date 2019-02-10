@@ -111,7 +111,7 @@
           </div>
            <div *ngIf="isLoggedIn&&!isMe&&isFriend" class="row col-md-5 px-3 my-1 justify-content-center" >
 
-            <button type="button" (click)="requestFriend()" class="btn btn-warning btn-xs">
+            <button type="button" (click)="removeFriend()" class="btn btn-warning btn-xs">
               Unfollowing
             </button>
 
@@ -245,9 +245,9 @@
       <ng-container *ngFor="let review of GetReviews; let c = index">
         <div class="row jumbotron p-3 m-1">
 
-          <table class="flex-fill">
+          <table class="col-12">
             <tr class="row ">
-              <td class="col-2 m-1 p-1 ">
+              <td class="col-3 m-1 p-1 ">
 
                 <img  *ngIf="!isFeedbackImageLoading[c]" [title]="review.sender"  (click)="changeProfile(review.sender)" style="cursor: pointer;width: 70px; height: 70px" class="img-circle" [src]="feedbackImageToShow[c]">
 
@@ -257,12 +257,12 @@
 
               </td>
 
-              <td class="col-8 m-1 p-1 ">
+              <td class="col-7 m-1 p-1 ">
                 {{ review.event_text }}
               </td>
             </tr>
             <tr class="row ">
-              <td class="col-2 m-1 p-1">
+              <td class="col-3 m-1 p-1">
                 <div class="col-3 offset-1 ">
                   <img *ngIf="review['is_positive']==true"  style="width: 30px;height: 30px" class="img-circle" src="../../../assets/images/icons8-plus-512.png">
                   <img *ngIf="review['is_positive']==false" style="width: 30px;height: 30px" class="img-circle" src="../../../assets/images/icons8-minus-512.png">
@@ -271,7 +271,7 @@
 
               </td>
 
-              <td class="col-8 m-1 p-1 ">
+              <td class="col-7 m-1 p-1 ">
                 {{ review.feedback }}
               </td>
             </tr>

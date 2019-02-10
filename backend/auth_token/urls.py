@@ -14,6 +14,7 @@ urlpatterns = [
 	path('auth/Profile/', views.UserProfile.as_view()),
 	path('auth/SaveReview/', views.SaveReview.as_view()),
 	path('auth/RequestFriend/', views.RequestFriend.as_view()),
+	path('auth/RemoveFriend/', views.RemoveFriend.as_view()),
 	re_path(r'^auth/FileUpload/(?P<filename>[^/]+)$', views.FileUploadView.as_view()),
 
 

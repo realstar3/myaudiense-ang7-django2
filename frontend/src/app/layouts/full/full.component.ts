@@ -1,12 +1,13 @@
-import {Component, OnInit, HostListener, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, HostListener, Output, EventEmitter, ViewChild} from '@angular/core';
 import { Router } from '@angular/router';
 
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import {UserService} from '../../shared/services/user.service';
-import {ToastaService, ToastaConfig, ToastOptions, ToastData} from 'ngx-toasta';
+
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Subject, Subscription} from "rxjs";
 import { ToolbarHelpers } from './toolbar.helpers';
+import {ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-full-layout',
@@ -14,6 +15,7 @@ import { ToolbarHelpers } from './toolbar.helpers';
   styleUrls: ['./full.component.scss']
 })
 export class FullComponent implements OnInit {
+
   @Output() AfterLogon = new EventEmitter<void>();
   color = 'defaultdark';
   showSettings = false;
@@ -31,15 +33,12 @@ export class FullComponent implements OnInit {
 
 
   constructor(
+    private toast:ToastrService,
     public router: Router,
     private userService: UserService,
-    private toastaService: ToastaService,
-    private toastaConfig: ToastaConfig,
     private formBuilder: FormBuilder
   ) {
 
-
-    this.toastaConfig.theme = 'default';
     this.registerForm = this.formBuilder.group({
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6)]],
@@ -48,14 +47,20 @@ export class FullComponent implements OnInit {
   }
 
 
-
-
   ngOnInit() {
+
     if (this.router.url === '/') {
       this.router.navigate(['/starter']);
     }
+
     this.handleLayout();
   }
+
+  ngAfterViewInit() {
+
+
+  }
+
   get f() { return this.registerForm.controls; }
 
   @HostListener('window:resize', ['$event'])
@@ -107,7 +112,7 @@ export class FullComponent implements OnInit {
       .subscribe(
         data => {
           this.isLoading = false;
-          this.toastaService.success('Success');
+              this.toast.success("Success!");
           this.eventsSubject.next();
 
 
@@ -115,7 +120,7 @@ export class FullComponent implements OnInit {
         errMessage => {
           this.isLoading = false;
           // if (err.indexOf("Unauthorized") != -1)
-          this.toastaService.error(errMessage);
+          this.toast.error(errMessage);
         }
 
       )

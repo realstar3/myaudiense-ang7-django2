@@ -1,5 +1,6 @@
-import { Component, OnInit , Inject} from '@angular/core';
+import {Component, OnInit, Inject, Input} from '@angular/core';
 import {ChatService} from "../../shared/services/chat.service";
+import {Observable, Subject} from "rxjs";
 
 @Component({
   selector: 'app-chat-list',
@@ -7,13 +8,17 @@ import {ChatService} from "../../shared/services/chat.service";
   styleUrls: ['./chat-list.component.scss']
 })
 export class ChatListComponent implements OnInit {
-
+  private MsgLoadedEvents_Subject: Subject<void> = new Subject<void>();
   chats :any[] ;
   activeChat: any;
-  client_image:string;
-  client_name:string;
-  chatName: string = 'demo';
-  room_id;
+  room = {
+    'room_id':'',
+    'title':'',
+    'client_name':'',
+    'client_image':''
+
+  };
+
 
   constructor(private chatService:ChatService) {
   }
@@ -23,10 +28,11 @@ export class ChatListComponent implements OnInit {
     this.chatService.messages.subscribe(msg => {
       const msg_object = JSON.parse(msg['data']);
 
-      if(this.room_id === msg_object['thread_id']){
-        let read_m = {read:this.room_id}
+      if(this.room.room_id === msg_object['thread_id']){
+        let read_m = {read:this.room.room_id}
         this.chatService.messages.next(read_m)
         this.activeChat.messages.push(msg_object)
+        this.MsgLoadedEvents_Subject.next();
       }else{
         this.chats.forEach(room=>{
           if (room.hash_id === msg_object['thread_id']){
@@ -42,7 +48,8 @@ export class ChatListComponent implements OnInit {
   getChatsList() {
     this.chatService.load_Inbox().subscribe(chats => {
       this.chats = JSON.parse(chats['threads']);
-      // this.activeChat = this.chats[0];
+      if (this.chats.length!=undefined)
+        this.onActiveChat(this.chats[0]);
     });
   }
 
@@ -52,23 +59,25 @@ export class ChatListComponent implements OnInit {
   }
 
   onActiveChat(chat) {
-    this.room_id = chat.hash_id;
-    this.client_name = chat.client_name
+    this.room['room_id'] = chat.hash_id;
+    this.room['client_name'] = chat.client_name
+    this.room['title'] = chat.title
     if(chat.image.length==0){
-      this.client_image = "../../../assets/images/users/profile.png"
+      this.room.client_image = "../../../assets/images/users/profile.png"
     } else {
-      this.client_image = chat.image
+      this.room.client_image = chat.image
     }
 
 
-    this.chatService.load_message(this.room_id).subscribe(
+    this.chatService.load_message(this.room.room_id).subscribe(
       data=>{
         this.activeChat = data;
         this.chats.forEach(room=>{
-          if (room.hash_id === this.room_id){
+          if (room.hash_id === this.room.room_id){
             room.unread_count = 0;
           }
-        })
+        });
+        this.MsgLoadedEvents_Subject.next();
       });
   }
 

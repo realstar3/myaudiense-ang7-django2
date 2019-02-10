@@ -10,7 +10,7 @@ import {
   filter
 } from 'rxjs/operators';
 import { Component, Injectable, ViewChild } from '@angular/core';
-import { Jsonp, URLSearchParams } from '@angular/http';
+
 
 const states = [
   'Alabama',

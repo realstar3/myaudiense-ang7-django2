@@ -63,7 +63,7 @@ class LoadMessages(generics.GenericAPIView):
 		if 'before' in request.GET:
 			q.append(Q(date__lt=int(request.GET['before'])))
 		# query messages matching filter
-		messages = models.Message.objects.filter(*q).order_by('-id')
+		messages = models.Message.objects.filter(*q).order_by('date')
 		messages_data = serializers.MessageListSerializer(messages[:30]).data
 		# mark any unread messages in chat as read
 		thread.mark_read(request.user)

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router} from '@angular/router';
 import {UserService} from '../../shared/services/user.service';
-import {ToastaService} from 'ngx-toasta';
+
 
 /*tslint:disable*/
 @Component({
@@ -14,8 +14,8 @@ export class ForgotPasswordComponent implements OnInit {
 	isLoading: boolean = false;
 	sendOK:boolean = false;
 	constructor(private userService: UserService,
-				private router: Router,
-				private toastrService: ToastaService) {
+				private router: Router
+				) {
 	}
 
 	ngOnInit() {
@@ -29,14 +29,14 @@ export class ForgotPasswordComponent implements OnInit {
 			data =>{
 				this.sendOK = true;
 				this.isLoading = false;
-				this.toastrService.success('Sent password reset link to ' + this.credentials.email);
+				// this.toastrService.success('Sent password reset link to ' + this.credentials.email);
 			},
 			err => {
 				this.isLoading = false;
-				if (err.indexOf("exist") > -1){
-					this.toastrService.error('Can\'t find that email, sorry.')
-				} else
-					this.toastrService.error(err);
+				// if (err.indexOf("exist") > -1){
+				// 	this.toastrService.error('Can\'t find that email, sorry.')
+				// } else
+				// 	this.toastrService.error(err);
 			}
 		);
 	}

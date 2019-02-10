@@ -7,7 +7,7 @@
       <mat-sidenav class="mat-elevation-z2" mode="side" opened="true" #chatSidenav>
         <app-contacts [chats]="chats" (onActiveChat)="onActiveChat($event)" *ngIf="chats"></app-contacts>
       </mat-sidenav>
-      <app-chat [activeChat]="activeChat" [client_name] ='client_name' [client_image]="client_image" [chatSidenav]="chatSidenav" (onSendChat)="sendChat($event)"></app-chat>
+      <app-chat [activeChat]="activeChat" [room] ='room' [chatSidenav]="chatSidenav" [MsgLoadedEvents]="eventsSubject.asObservable()" (onSendChat)="sendChat($event)"></app-chat>
     </mat-sidenav-container>
   </div>
 </div>

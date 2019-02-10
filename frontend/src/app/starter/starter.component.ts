@@ -1,6 +1,6 @@
 import { Component, AfterViewInit } from '@angular/core';
 import {UserService} from '../shared/services/user.service';
-import {ToastaConfig, ToastaService} from 'ngx-toasta';
+
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {MustMatch} from "../_helpers/must-match.validator";
 import {ExistSpace} from "../_helpers/exist-space.validator";
@@ -17,11 +17,9 @@ export class StarterComponent implements AfterViewInit {
   active_status = false;
   constructor(
     private userService: UserService,
-    private toastaService: ToastaService,
-    private toastaConfig: ToastaConfig,
     private formBuilder: FormBuilder
   ) {
-    this.toastaConfig.theme = 'default';
+
     this.registerForm = this.formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -62,13 +60,13 @@ export class StarterComponent implements AfterViewInit {
       .subscribe(
         (res: any) => {
           this.active_status = true;
-          this.toastaService.success('Registered successfully');
+          // this.toastaService.success('Registered successfully');
           this.isLoading = false;
 
         },
         err => {
           this.isLoading = false;
-          this.toastaService.error(err);
+          // this.toastaService.error(err);
         }
       );
   }

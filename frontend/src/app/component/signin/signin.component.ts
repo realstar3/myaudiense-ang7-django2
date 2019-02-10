@@ -2,7 +2,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import { Router} from '@angular/router';
 import {UserService} from '../../shared/services/user.service';
-import {ToastaService} from 'ngx-toasta';
+
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {MustMatch} from '../../_helpers/must-match.validator';
 @Component({
@@ -18,7 +18,7 @@ export class UserSignInComponent implements OnInit {
   constructor(
     private userService: UserService,
     private router: Router,
-    private toastaService: ToastaService,
+
     private formBuilder: FormBuilder
   ) {}
 
@@ -49,14 +49,14 @@ export class UserSignInComponent implements OnInit {
       .subscribe(
         data => {
           this.isLoading = false;
-          this.toastaService.success('Success');
+          // this.toastaService.success('Success');
           this.router.navigate(['/starter']);
           this.userService.emitChange('Data from child');
         },
         errMessage => {
           this.isLoading = false;
           // if (err.indexOf("Unauthorized") != -1)
-          this.toastaService.error(errMessage);
+          // this.toastaService.error(errMessage);
         }
 
       )

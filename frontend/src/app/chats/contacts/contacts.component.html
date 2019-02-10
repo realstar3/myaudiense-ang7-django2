@@ -8,9 +8,11 @@
       </ng-template>
       <span fxFlex></span>
       <div fxLayout="row" fxLayoutAlign="end" >
+        <!--
         <button mat-icon-button>
           <mat-icon>phone</mat-icon>
         </button>
+        -->
         <button mat-icon-button [matMenuTriggerFor]="userMenu">
           <mat-icon>more_vert</mat-icon>
         </button>
@@ -46,7 +48,7 @@
 <mat-menu #userMenu="matMenu">
   <button mat-menu-item (click)="AddRoom()">
     <mat-icon> account_circle </mat-icon>
-    <span> Add </span>
+    <span>Add Room</span>
   </button>
   <button mat-menu-item>
     <mat-icon> settings </mat-icon>

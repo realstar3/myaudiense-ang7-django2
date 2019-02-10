@@ -6,7 +6,6 @@
     left: 3px;
     right: auto;
 }
-/*.active{*/
-  /*color: #ed74b7;*/
-  /*background: #ddf3e9;*/
-/*}*/
+#toast-container > div {
+    opacity:1;
+}

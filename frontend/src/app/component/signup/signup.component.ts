@@ -3,7 +3,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MustMatch} from '../../_helpers/must-match.validator';
 import {UserService} from '../../shared/services/user.service';
 import {Router} from '@angular/router';
-import {ToastaService} from 'ngx-toasta';
+
 
 import {ExistSpace} from "../../_helpers/exist-space.validator";
 
@@ -22,7 +22,7 @@ export class SignupComponent implements OnInit {
   constructor(
     private userService: UserService,
     private router: Router,
-    private toastaService: ToastaService,
+
     private formBuilder: FormBuilder
   ) { }
 
@@ -66,13 +66,13 @@ export class SignupComponent implements OnInit {
       .subscribe(
         (res: any) => {
           this.active_status = true;
-          this.toastaService.success('Registered successfully');
+          // this.toastaService.success('Registered successfully');
           this.isLoading = false;
 
         },
         err => {
           this.isLoading = false;
-          this.toastaService.error(err);
+          // this.toastaService.error(err);
         }
       );
   }

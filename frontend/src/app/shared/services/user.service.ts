@@ -1,12 +1,12 @@
 /*tslint:disable*/
 import { Injectable } from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {AppSettings} from '../../app.constant';
-import {catchError, tap, map} from 'rxjs/operators';
-import {Subject, throwError} from 'rxjs';
+import {catchError, tap, map, filter, mergeMap} from 'rxjs/operators';
+import {Subject, throwError, } from 'rxjs';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
-import {ErrorObservable} from "rxjs-compat/observable/ErrorObservable";
-import {ToastaService} from "ngx-toasta";
+
+
 
 
 
@@ -29,8 +29,9 @@ export class UserService {
   }
 
 
-  constructor(private  httpClient:HttpClient,
-              private toastaService:ToastaService){
+  constructor(
+    private  httpClient:HttpClient,
+    ){
 
     this.loggedIn = !!localStorage.getItem('auth_token');
     if(this.loggedIn)
@@ -265,6 +266,22 @@ export class UserService {
         catchError(this.handleError)
       );
   }
+  RemoveFriend(friend_user_name):Observable<any>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        'Authorization': this.getToken()
+      })
+    };
+    return this.httpClient
+    .post(`http://${this.apiUrl}/api/auth/RemoveFriend/`, {friend_user_name}, httpOptions)
+      .pipe(
+        tap( res=> {
+
+        }),
+        catchError(this.handleError)
+      );
+  }
 
   /**
    * Handle any errors from the API
@@ -296,27 +313,5 @@ export class UserService {
 
     return throwError(errMessage);
   }
-  // private handleError(error: HttpErrorResponse) {
-  // 	if (error.error instanceof ErrorEvent) {
-  // 		// A client-side or network error occurred. Handle it accordingly.
-  // 		console.error('An error occurred:', error.error.message);
-  // 	} else {
-  // 		// The backend returned an unsuccessful response code.
-  // 		// The response body may contain clues as to what went wrong,
-  // 		console.error(
-  // 			`Backend returned code ${error.status}, ` +
-  // 			`body was: ${error.error.detail}`);
-  // 		if(error['status']!=undefined && error['status']==403)
-  //     {
-  //       this.toastaService.error('Token not valid or not active user');
-  //       this.logout();
-  //
-  //     }
-  // 	}
-  // 	// return an ErrorObservable with a user-facing error message
-  // 	return new ErrorObservable();
-  // };
-
-
 
 }

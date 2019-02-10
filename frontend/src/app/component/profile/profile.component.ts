@@ -2,7 +2,7 @@ import {Component, OnInit} from "@angular/core";
 import {UserService} from "../../shared/services/user.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import { DomSanitizer } from '@angular/platform-browser';
-import {ToastaService} from "ngx-toasta";
+
 import { FileUploader } from 'ng2-file-upload';
 import {AppSettings} from "../../app.constant";
 import {ModalDismissReasons, NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -12,11 +12,7 @@ import {Subscription} from "rxjs";
 const URL = 'http://' + AppSettings.API_ENDPOINT + '/api/auth/FileUpload/';
 @Component({
   templateUrl: './profile.component.html',
-  styles:[`
-    .my-drop-zone { border: dotted 3px lightgray; }
-    .nv-file-over { border: dotted 3px red; } /* Default class applied to drop zones on over */
-    .another-file-over-class { border: dotted 3px green; }
-  `]
+  styleUrls:['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
   isMe = false;
@@ -42,7 +38,7 @@ export class ProfileComponent implements OnInit {
   constructor (
     private userService: UserService,
     public router: Router,
-    public toastaService: ToastaService,
+
     private route: ActivatedRoute,
     private sanitizer : DomSanitizer,
     private modalService: NgbModal
@@ -105,6 +101,7 @@ export class ProfileComponent implements OnInit {
     }
   }
   saveReview(isPositive:boolean){
+
     if(this.event_content.length==0 || this.review_content.length ==0)
       return;
     let send_data = {
@@ -124,11 +121,15 @@ export class ProfileComponent implements OnInit {
           this.modalService.dismissAll(ModalDismissReasons.ESC)
         }
 
-        this.toastaService.success("Saved successfully.");
+        // this.toastaService.success("Saved successfully.");
         this.selectProfile();
       },
       err=>{
-        this.toastaService.error(err);
+         if (this.modalService.hasOpenModals()){
+          this.modalService.dismissAll(ModalDismissReasons.ESC)
+        }
+
+        // this.toastaService.error(err);
       }
     )
 
@@ -164,7 +165,7 @@ export class ProfileComponent implements OnInit {
       });
     };
     this.uploader.onSuccessItem = ()=>{
-      this.toastaService.success('Image changed successfully.')
+      // this.toastaService.success('Image changed successfully.')
       this.userService.userProfile(this.username).subscribe(
         data=>{
           this.isSelected = true
@@ -175,7 +176,7 @@ export class ProfileComponent implements OnInit {
         },
         err=>{
           this.isSelected = false
-          this.toastaService.error(err);
+          // this.toastaService.error(err);
 
 
         }
@@ -184,7 +185,7 @@ export class ProfileComponent implements OnInit {
     }
     this.uploader.onErrorItem = (item, response, status, response_headers)=>{
 
-      this.toastaService.error("Upload failed, status code:" + status.toString())
+      // this.toastaService.error("Upload failed, status code:" + status.toString())
 
     }
     this.uploader.onAfterAddingFile = (item) => {
@@ -361,7 +362,7 @@ export class ProfileComponent implements OnInit {
       },
       err=>{
         this.isSelected = false
-        this.toastaService.error(err);
+        // this.toastaService.error(err);
 
 
       }
@@ -380,8 +381,22 @@ export class ProfileComponent implements OnInit {
     let friend_user_name = this.username
     this.userService.RequestFriend(friend_user_name).subscribe(
       data=>{
-        this.toastaService.success("OK")
+        // this.toastaService.success("OK")
         this.isFriend = true
+        this.selectProfile()
+
+      }
+    )
+
+  }
+  removeFriend(){
+
+    let friend_user_name = this.username
+    this.userService.RemoveFriend(friend_user_name).subscribe(
+      data=>{
+        // this.toastaService.success("OK")
+        this.isFriend = false
+        this.selectProfile()
 
       }
     )

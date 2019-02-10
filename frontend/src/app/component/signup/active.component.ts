@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UserService} from '../../shared/services/user.service';
-import {ToastaService} from 'ngx-toasta';
+
 
 @Component({
   template:''
@@ -12,7 +12,7 @@ export class ActiveComponent implements OnInit {
       private router: Router,
       private route: ActivatedRoute,
       private userService: UserService,
-      private toastaService: ToastaService
+
     ) {}
   token: string;
   activated = true;
@@ -32,7 +32,7 @@ export class ActiveComponent implements OnInit {
 
       },
       err => {
-       this.toastaService.error(err);
+       // this.toastaService.error(err);
        this.router.navigate(['/starter']);
       }
     );
